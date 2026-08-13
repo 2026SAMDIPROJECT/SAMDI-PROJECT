@@ -10,10 +10,10 @@ public class PlayerMove : NetworkBehaviour
     [SerializeField] private PlayerInput playerInput;
     [SerializeField] private Camera cam;
 
-    private void OnMove(InputValue value)
+    public void OnMove(InputAction.CallbackContext value)
     {
         if(!IsOwner) return;
-        moveInput = value.Get<Vector2>();
+        moveInput = value.ReadValue<Vector2>();
     }
 
     public override void OnNetworkSpawn()
