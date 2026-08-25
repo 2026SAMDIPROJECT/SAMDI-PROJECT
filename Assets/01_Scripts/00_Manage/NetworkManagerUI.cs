@@ -17,6 +17,7 @@ public class NetworkManagerUI : MonoBehaviour
     [Header("코드 UI")]
     [SerializeField] private TMP_Text hostCode;
     [SerializeField] private TMP_InputField clientCode;
+    [SerializeField] private GameObject loadingBoard;
 
     private async void Start()
     {
@@ -30,6 +31,7 @@ public class NetworkManagerUI : MonoBehaviour
             // 익명 로그인
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             Debug.Log($"익명 로그인 :: {AuthenticationService.Instance.PlayerId}");
+            loadingBoard.SetActive(false);
         }
 
         // 로그인이 모두 완료 되었을 때 버튼에 리스너 추가(그 전엔 눌러도 반응 없음)
@@ -47,13 +49,14 @@ public class NetworkManagerUI : MonoBehaviour
     {
         try
         {
-            hostCode.transform.parent.gameObject.SetActive(true);
+            loadingBoard.SetActive(true);
             // 방 최대 인원 4명(IP, 포트번호, 접속 키 같은게 다 있음)
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
 
             // 코드 발급
             string code = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
+            hostCode.transform.parent.gameObject.SetActive(true);
             hostCode.text = code;
             
             // 서버 정보(Allocation을 RelayServerData로 바꿈) dtls는 변경 방식
@@ -61,11 +64,16 @@ public class NetworkManagerUI : MonoBehaviour
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(serverData);
 
             NetworkManager.Singleton.StartHost(); // 호스트 시작
+            loadingBoard.SetActive(false);
             DisableUI();
         }
         catch(RelayServiceException e)
         {
             Debug.Log(e);
+        }
+        finally
+        {
+            loadingBoard.SetActive(false); // 어떤 이유에서 끝나든지 로딩창 닫
         }
     }
 
@@ -74,9 +82,10 @@ public class NetworkManagerUI : MonoBehaviour
     {
         try
         {
-            if(clientCode.text == null)
+            if(string.IsNullOrEmpty(clientCode.text))
             {
                 Debug.Log("코드를 비울 수 없음");
+                return;
             }
             string code = clientCode.text; // 입력된 코드 받음
 

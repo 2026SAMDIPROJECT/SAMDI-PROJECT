@@ -9,6 +9,9 @@ public class PlayerMove : NetworkBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private PlayerInput playerInput;
     [SerializeField] private Camera cam;
+    [SerializeField] private LayerMask interactionLayer;
+    [SerializeField] private float detectRadius;
+    [SerializeField] private float checkInterval;
 
     public void OnMove(InputAction.CallbackContext value)
     {
@@ -38,7 +41,7 @@ public class PlayerMove : NetworkBehaviour
         if(!IsOwner) return;
         MovePlayer();
     }
-
+    
     private void MovePlayer()
     {
         Vector3 dir = (transform.forward * moveInput.y) + (transform.right * moveInput.x);
