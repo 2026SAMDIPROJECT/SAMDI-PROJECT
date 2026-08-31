@@ -1,7 +1,7 @@
 // TODO : 전범위 계산은 연산비용 커서 나중에 줄여볼 예정
 using UnityEngine;
 
-public class EnemyPerception : MonoBehaviour
+public class AIPerception : MonoBehaviour
 {
     // 임의로 정해진 수치(나중에 변경)
     [SerializeField] private float detectionRange = 20f;
@@ -9,7 +9,6 @@ public class EnemyPerception : MonoBehaviour
     [SerializeField] private Transform eyePoint;
 
     public Transform player {get; private set;}
-
     private void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");

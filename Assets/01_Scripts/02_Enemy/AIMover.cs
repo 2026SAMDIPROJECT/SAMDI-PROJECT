@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyMover : MonoBehaviour
+public class AIMover : MonoBehaviour
 {
     private NavMeshAgent agent;
 
