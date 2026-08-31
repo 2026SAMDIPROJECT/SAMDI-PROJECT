@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class AIManagement : MonoBehaviour
 {
     private AIPerception perception;
     private AIMover mover;
