@@ -1,5 +1,3 @@
-// TODO : 전범위 계산은 연산비용 커서 나중에 줄여볼 예정
-using System;
 using UnityEngine;
 
 public class AIPerception : MonoBehaviour
@@ -30,7 +28,7 @@ public class AIPerception : MonoBehaviour
     private void RecalculateCache()
     {
         sqrDetectionRange = detectionRange * detectionRange;
-        cosHalfViewAngle = Mathf.Cos((viewAngle * 0.5f) * Mathf.Rad2Deg);
+        cosHalfViewAngle = Mathf.Cos(viewAngle * 0.5f * Mathf.Deg2Rad);
     }
     // 적 시점 안에 들어왔는지 판별
     public bool PlayerInRange()
