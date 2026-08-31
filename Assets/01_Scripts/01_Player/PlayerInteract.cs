@@ -40,8 +40,8 @@ public class PlayerInteract : NetworkBehaviour
     {
         if(ishold && isInteract)
         {
-            interactionFill.fillAmount = holdTime.progress; // 타이머 진행도 프로퍼티 사용해 백분율 구함
             holdTime.RunTimer(); // 타이머 실행
+            interactionFill.fillAmount = holdTime.progress; // 타이머 진행도 프로퍼티 사용해 백분율 구함
         }
         Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         RaycastHit hit;
@@ -69,15 +69,14 @@ public class PlayerInteract : NetworkBehaviour
 
     public void OnInteract(InputAction.CallbackContext callback)
     {
-        Debug.Log("inter");
         if(callback.started)
         {
-            ishold = true;
-            holdTime.StartTimer(holdDuration);
             if(callback.interaction is HoldInteraction hold)
             {
                 holdDuration = hold.duration > 0? hold.duration : InputSystem.settings.defaultHoldTime;
+                holdTime.StartTimer(holdDuration);
             }
+            ishold = true;
         }
 
         if(callback.performed)
