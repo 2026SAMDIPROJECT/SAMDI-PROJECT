@@ -1,16 +1,32 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyMover : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private NavMeshAgent agent;
+
+    private void Awake()
     {
-        
+        agent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void EnemyMove(Vector3 targetPosition)
     {
-        
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(targetPosition);
+        }
+    }
+    public void Stop()
+    {
+        if (agent != null && agent.enabled && agent.isOnNavMesh) agent.isStopped = true;
+    }
+    public void ForwardRotate(Vector3 targetPosition)
+    {
+        Vector3 targetDirection = (targetPosition - transform.position).normalized;
+        targetDirection.y = 0f;
+
+        if (targetDirection != Vector3.zero) transform.rotation = Quaternion.LookRotation(targetDirection);
     }
 }
