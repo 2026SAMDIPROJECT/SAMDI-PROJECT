@@ -2,30 +2,57 @@ using UnityEngine;
 
 public class AIManagement : MonoBehaviour
 {
+    [SerializeField] private float stopDistance = 3f;
     private AIPerception perception;
     private AIMover mover;
+    private bool hasTarget;
+    private float sqrStopDistance; // 제곱 거리로 캐싱
 
     private void Awake()
     {
         perception = GetComponent<AIPerception>();
         mover = GetComponent<AIMover>();
+        RecalculateCache();
     }
+
+    private void OnValidate() => RecalculateCache();
+
+    private void RecalculateCache()
+    {
+        sqrStopDistance = stopDistance * stopDistance;
+    }
+
     private void Update()
     {
+        if (!hasTarget)
+        {
+            if (perception.CanSeePlayer()) hasTarget = true;
+            else
+            {
+                hasTarget = false;
+                return;
+            }
+        }
         Transform player = perception.player;
         if (player == null)
         {
             mover.Stop();
             return;
         }
-        if (perception.CanSeePlayer())
+        if (IsWithinStopDistance(player.position))
         {
+            mover.Stop();
             mover.ForwardRotate(player.position);
-            mover.EnemyMove(player.position);
         }
         else
         {
-            mover.Stop();
+            mover.EnemyMove(player.position);
         }
+    }
+    // 거리 제곱 계산을 별도의 메서드로 나누어둠 (나중에 사거리 체크 편함)
+    private bool IsWithinStopDistance(Vector3 targetPosition)
+    {
+        float sqrDist = (targetPosition - transform.position).sqrMagnitude;
+        return sqrDist <= sqrStopDistance;
     }
 }
