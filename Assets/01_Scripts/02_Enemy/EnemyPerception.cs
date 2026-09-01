@@ -4,8 +4,10 @@ using UnityEngine;
 public class AIPerception : NetworkBehaviour
 {
     // 임의로 정해진 수치(나중에 변경)
+    [Header("적 감지 범위 설정")]
     [SerializeField] private float detectionRange = 20f;
     [SerializeField] private float viewAngle = 120f;
+    [Header("레이어 / 적 감지 설정")]
     [SerializeField] private LayerMask obstacleLayer;
     [SerializeField] private Transform eyePoint;
     [SerializeField] private float perceptionInterval = 0.15f;
@@ -31,7 +33,7 @@ public class AIPerception : NetworkBehaviour
     private void RecalculateCache()
     {
         sqrDetectionRange = detectionRange * detectionRange;
-        float clampView = Mathf.Clamp(viewAngle, 0f, 180f);
+        float clampView = Mathf.Clamp(viewAngle, 0f, 180f); // 적 최대 시야각을 180도로 고정
         float cos = Mathf.Cos(clampView * 0.5f * Mathf.Deg2Rad);
         sqrCosHalfViewAngle = cos * cos; // 제곱근, 정규화 삭제를 위해 사용
     }
@@ -55,7 +57,7 @@ public class AIPerception : NetworkBehaviour
     public bool CanSeePlayer()
     {
         if (player == null) return false;
-        if (Time.time < nextCheckTime) return cachedResult; // perception
+        if (Time.time < nextCheckTime) return cachedResult;
 
         nextCheckTime = Time.time + perceptionInterval;
         cachedResult = EvaluateCanSeePlayer();
