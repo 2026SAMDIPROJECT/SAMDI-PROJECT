@@ -4,7 +4,6 @@ public class AIManagement : MonoBehaviour
 {
     private AIPerception perception;
     private AIMover mover;
-    private bool hasTarget;
 
     private void Awake()
     {
@@ -13,25 +12,20 @@ public class AIManagement : MonoBehaviour
     }
     private void Update()
     {
-        if (!hasTarget)
-        {
-            if (perception.CanSeePlayer()) hasTarget = true;
-            else
-            {
-                mover.Stop();
-                return;
-            }
-        }
         Transform player = perception.player;
         if (player == null)
         {
-            hasTarget = false;
             mover.Stop();
             return;
         }
+        if (perception.CanSeePlayer())
+        {
+            mover.ForwardRotate(player.position);
+            mover.EnemyMove(player.position);
+        }
         else
         {
-            mover.EnemyMove(player.position);
+            mover.Stop();
         }
     }
 }

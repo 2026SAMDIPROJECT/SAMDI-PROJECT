@@ -18,9 +18,10 @@ GameObject:
   - component: {fileID: 286384858474830655}
   - component: {fileID: 3078941080243829733}
   - component: {fileID: -8750525816131274393}
+  - component: {fileID: 3662207673520251767}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -396,8 +397,19 @@ MonoBehaviour:
   distance: 3
   cam: {fileID: 3238737714609023574}
   playerInput: {fileID: 286384858474830655}
-  ishold: 0
-  isInteract: 0
+--- !u!114 &3662207673520251767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913773628749095425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c6555eeb9077412cb2774e8d573d2d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerNetWorkInit
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &3126903478177584737
 GameObject:
   m_ObjectHideFlags: 0
