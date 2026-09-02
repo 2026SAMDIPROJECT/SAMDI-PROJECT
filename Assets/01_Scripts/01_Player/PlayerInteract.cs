@@ -25,14 +25,11 @@ public class PlayerInteract : NetworkBehaviour
         {
             if(playerInput != null)
                 playerInput.enabled = false;
-            if(cam != null)
-                cam.gameObject.SetActive(false);
         }
         else
-        {
-            Camera main = Camera.main;
-            if(main != null && main != cam)
-                main.gameObject.SetActive(false);
+        { // 이미 다른 컴포넌트에서 맴을 비활성화 / 활성화함
+            if(playerInput != null)
+                playerInput.enabled = true;
         }
     }
 
