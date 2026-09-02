@@ -363,7 +363,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -519,9 +519,9 @@ GameObject:
   - component: {fileID: 309399859}
   - component: {fileID: 309399858}
   - component: {fileID: 309399857}
+  - component: {fileID: 309399864}
   - component: {fileID: 309399856}
   - component: {fileID: 309399863}
-  - component: {fileID: 309399864}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -542,8 +542,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIPerception
   ShowTopMostFoldoutHeaderGroup: 1
-  detectionRange: 20
-  viewAngle: 90
+  spec: {fileID: 11400000, guid: b0e8cba74719d466ebd26d45ccfcb196, type: 2}
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -562,6 +561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fcc87a28b7024800865f2b56dd13dbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIMover
+  agent: {fileID: 309399863}
 --- !u!114 &309399858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -574,6 +574,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d46370bbc722f428badffd4ca312547e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIManagement
+  stopDistance: 0
+  perception: {fileID: 309399856}
+  mover: {fileID: 309399857}
 --- !u!136 &309399859
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -706,6 +709,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
   GlobalObjectIdHash: 2100233877
   InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -1594,6 +1598,7 @@ GameObject:
   - component: {fileID: 859524559}
   - component: {fileID: 859524558}
   - component: {fileID: 859524557}
+  - component: {fileID: 859524560}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1690,6 +1695,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &859524560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 859524556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d9c1596cc3234391a3671209d01d460, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRegistry
 --- !u!1 &1005705233
 GameObject:
   m_ObjectHideFlags: 0
@@ -2070,7 +2087,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -2410,6 +2427,8 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+  m_MaxWidth: -1
+  m_MaxHeight: -1
 --- !u!114 &1604113624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2480,7 +2499,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 1
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -3143,7 +3162,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 1
   checkPaddingRequired: 0
   m_isRichText: 1
