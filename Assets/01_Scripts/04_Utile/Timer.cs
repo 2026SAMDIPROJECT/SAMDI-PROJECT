@@ -13,6 +13,7 @@ public class Timer
     {
         during = true;
         maxTime = time;
+        passedTime = 0f;
     }
 
     public void RunTimer() // 타이머 실행. Update에 직접 넣지 않은 이유는 시간을 멈췄을 때를 대비함. 나중에 기믹 만들기 편하고 어차피 Time.deltaTime은 이전 프레임에서부터 걸린 시간을 가져옴.
@@ -23,7 +24,7 @@ public class Timer
             if(passedTime >= maxTime)
             {
                 during = false;
-                passedTime = 0;
+                passedTime = 0f;
             }
         }
     }
@@ -31,6 +32,6 @@ public class Timer
     public void EndTimer()
     {
         during = false;
-        passedTime = 0;
+        passedTime = 0f;
     }
 }

@@ -33,6 +33,8 @@ public class PlayerMove : NetworkBehaviour
             Camera main = Camera.main;
             if(main != null && main != cam)
                 main.gameObject.SetActive(false);
+            if(playerInput != null)
+                playerInput.enabled = true; // 혹시 모르는 인펏 활성화
         }
     }
 
@@ -47,7 +49,7 @@ public class PlayerMove : NetworkBehaviour
         Vector3 dir = (transform.forward * moveInput.y) + (transform.right * moveInput.x);
         dir.Normalize();
 
-        Vector3 tar = (dir * moveSpeed);
+        Vector3 tar = dir * moveSpeed;
 
         rigid.linearVelocity = new Vector3(tar.x, rigid.linearVelocity.y, tar.z);
     }
