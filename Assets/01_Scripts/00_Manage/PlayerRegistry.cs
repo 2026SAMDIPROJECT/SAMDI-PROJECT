@@ -9,6 +9,7 @@ public class PlayerRegistry : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
+        else if (Instance != null){ Destroy(gameObject); return;}
     }
     // 플레이어 등록
     public void Register(Transform playerTransform)

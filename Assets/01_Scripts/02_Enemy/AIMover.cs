@@ -3,13 +3,7 @@ using UnityEngine.AI;
 
 public class AIMover : MonoBehaviour
 {
-    private NavMeshAgent agent;
-
-    private void Awake()
-    {
-        agent = GetComponent<NavMeshAgent>();
-    }
-
+    [SerializeField]private NavMeshAgent agent;
     public void EnemyMove(Vector3 targetPosition)
     {
         if (agent != null && agent.enabled && agent.isOnNavMesh)

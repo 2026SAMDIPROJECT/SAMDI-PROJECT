@@ -3,15 +3,13 @@ using UnityEngine;
 public class AIManagement : MonoBehaviour
 {
     [SerializeField] private float stopDistance = 3f;
-    private AIPerception perception;
-    private AIMover mover;
+    [SerializeField] private AIPerception perception;
+    [SerializeField] private AIMover mover;
     private bool hasTarget;
     private float sqrStopDistance; // 제곱 거리로 캐싱
 
     private void Awake()
     {
-        perception = GetComponent<AIPerception>();
-        mover = GetComponent<AIMover>();
         RecalculateCache();
     }
 

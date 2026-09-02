@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class AIPerception : NetworkBehaviour
 {
-    // 임의로 정해진 수치(나중에 변경)
-    [Header("적 감지 범위 설정")]
-    [SerializeField] private float detectionRange = 20f;
-    [SerializeField] private float viewAngle = 120f;
+    [SerializeField] private EnemySpec spec;
     [Header("레이어 / 적 감지 설정")]
     [SerializeField] private LayerMask obstacleLayer;
     [SerializeField] private Transform eyePoint;
@@ -18,7 +15,6 @@ public class AIPerception : NetworkBehaviour
     private float nextCheckTime;
     private float nextPlayerRefreshTime;
     private bool cachedResult;
-
     public override void OnNetworkSpawn()
     {
         if (!IsServer)
@@ -26,14 +22,13 @@ public class AIPerception : NetworkBehaviour
             enabled = false;
             return;
         }
-        if (eyePoint == null) eyePoint = transform;
-        RecalculateCache();
+        RecalculateCache(spec);
     }
-    private void OnValidate() => RecalculateCache();
-    private void RecalculateCache()
+    private void OnValidate() => RecalculateCache(spec);
+    private void RecalculateCache(EnemySpec spec)
     {
-        sqrDetectionRange = detectionRange * detectionRange;
-        float clampView = Mathf.Clamp(viewAngle, 0f, 180f); // 적 최대 시야각을 180도로 고정
+        sqrDetectionRange = spec.detectionRange * spec.detectionRange;
+        float clampView = Mathf.Clamp(spec.viewAngle, 0f, 180f); // 적 최대 시야각을 180도로 고정
         float cos = Mathf.Cos(clampView * 0.5f * Mathf.Deg2Rad);
         sqrCosHalfViewAngle = cos * cos; // 제곱근, 정규화 삭제를 위해 사용
     }
