@@ -7,13 +7,13 @@ jobs:
     name: Build my project ✨
     runs-on: ubuntu-latest
     steps:
-      # Checkout
+      # 1. Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           lfs: true
 
-      # Cache
+      # 2. Cache
       - uses: actions/cache@v4
         with:
           path: Library
@@ -21,7 +21,7 @@ jobs:
           restore-keys: |
             Library-
 
-      # Build
+      # 3. Build (테스트 과정 없이 곧바로 빌드를 돌립니다)
       - name: Build project-Window
         uses: game-ci/unity-builder@v4
         env:
@@ -31,7 +31,7 @@ jobs:
         with:
           targetPlatform: StandaloneWindows64
 
-      # Output
+      # 4. Output
       - uses: actions/upload-artifact@v4
         with:
           name: Build-Window
