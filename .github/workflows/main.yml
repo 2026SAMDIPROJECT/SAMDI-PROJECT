@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Build Project by Platform :: {{matrix.targetPlatform}} ✨
+    name: "Build Project by Platform :: {{matrix.targetPlatform}} ✨"
     runs-on: ${{ matrix.buildOs }}
     
     strategy:
