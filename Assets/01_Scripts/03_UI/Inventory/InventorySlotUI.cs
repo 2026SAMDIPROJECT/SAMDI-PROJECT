@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -6,7 +5,6 @@ using UnityEngine.UI;
 public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     [SerializeField] private Image itemIcon;
-    [SerializeField] private TextMeshProUGUI quantityText;
 
     public int SlotIndex {get; private set;}
 
@@ -15,15 +13,12 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
         SlotIndex = index;
         ClearSlot();
     }
-    
-    public void UpdateSlot(Sprite icon, int count)
+    public void UpdateSlot(Sprite icon)
     {
         if (icon != null)
         {
             itemIcon.sprite = icon;
             itemIcon.enabled = true;
-            quantityText.text = count > 1 ? count.ToString() : "";
-            quantityText.enabled = count > 1;
         }
         else
         {
@@ -34,7 +29,6 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
     {
         itemIcon.sprite = null;
         itemIcon.enabled = false;
-        quantityText.enabled = false;
     }
 
     public void OnPointerClick(PointerEventData eventData)
