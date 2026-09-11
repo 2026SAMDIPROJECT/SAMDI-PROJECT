@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+public class InventoryUI : MonoBehaviour
 {
+    [SerializeField] private GameObject InventoryCanvas;
     [SerializeField] private Transform gridContainer;
     [SerializeField] private InventorySlotUI slotPrefab;
     [SerializeField] private int totalSlot = 20;
@@ -12,6 +13,14 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         GenerateSlot(); // TODO: 나중에 키 지정해서 슬롯 불러올 예정
+    }
+    public void ToggleInventory()
+    {
+        bool isActive = !InventoryCanvas.activeSelf;
+        InventoryCanvas.SetActive(isActive);
+
+        Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = isActive;
     }
     private void GenerateSlot()
     {
