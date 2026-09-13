@@ -30,7 +30,6 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
         itemIcon.sprite = null;
         itemIcon.enabled = false;
     }
-
     public void OnPointerClick(PointerEventData eventData)
     {
         // TODO: 클릭시 아이템 정보 표시 또는 사용

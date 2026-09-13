@@ -18,4 +18,8 @@ public class ItemData : ScriptableObject
 
     [Header("드롭")]
     public GameObject dropObject;
+
+    [Header("크기")]
+    public int width;
+    public int height;
 }
