@@ -12,7 +12,6 @@ public class PlayerInteract : NetworkBehaviour
     [SerializeField] private float interval;
     [SerializeField] private float distance;
     [SerializeField] Camera cam;
-    [SerializeField] private PlayerInput playerInput;
     private float holdDuration;
     private bool ishold;
     private bool isInteract;
@@ -21,16 +20,19 @@ public class PlayerInteract : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if(!IsOwner)
-        {
-            if(playerInput != null)
-                playerInput.enabled = false;
-        }
+        if(!IsOwner) return;
+
+        if(InputManager.Instance != null)
+            InputManager.Instance.InteractEvent += HandleInteract;
         else
-        { // 이미 다른 컴포넌트에서 맴을 비활성화 / 활성화함
-            if(playerInput != null)
-                playerInput.enabled = true;
-        }
+            Debug.LogWarning("InputManager.Instance가 null입니다. 씬에 InputManager가 있는지 확인하세요.");
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if(!IsOwner) return;
+        if(InputManager.Instance != null)
+            InputManager.Instance.InteractEvent -= HandleInteract;
     }
 
     private void Update()
@@ -64,7 +66,7 @@ public class PlayerInteract : NetworkBehaviour
         }
     }
 
-    public void OnInteract(InputAction.CallbackContext callback)
+    private void HandleInteract(InputAction.CallbackContext callback)
     {
         if(callback.started)
         {
