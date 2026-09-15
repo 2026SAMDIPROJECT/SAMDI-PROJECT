@@ -1,4 +1,6 @@
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -10,14 +12,32 @@ public class InventoryUI : MonoBehaviour
 
     private SlotPool slotPool;
     private InventoryGrid grid;
+    private GridLayoutGroup gridLayoutGroup;
+
 
     private void Awake()
     {
+        ConnectGridLayout();
         grid = InventoryGridBuilder.Build(totalSlot, columns);
         slotPool = new SlotPool(slotPrefab, gridContainer);
 
         GenerateSlot();
     }
+    private void OnValidate()
+    {
+        ConnectGridLayout();
+    }
+    private void ConnectGridLayout()
+    {
+        if (gridContainer == null) return;
+
+        var gridLayout = gridContainer.GetComponent<GridLayoutGroup>();
+        if (gridLayout == null) return;
+
+        gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        gridLayout.constraintCount = columns;
+    }
+
     public void ToggleInventory()
     {
         bool isActive = !inventoryCanvas.activeSelf;
