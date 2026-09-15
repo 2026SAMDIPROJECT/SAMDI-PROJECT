@@ -7,10 +7,6 @@ public partial class PlayerRegistry : MonoBehaviour
 {
     public static PlayerRegistry Instance {get; private set;}
     private readonly List<Transform> activePlayers = new List<Transform>();
-    private static void ResetInstance()
-    {
-        Instance = null;
-    }
 
     private void Awake()
     {

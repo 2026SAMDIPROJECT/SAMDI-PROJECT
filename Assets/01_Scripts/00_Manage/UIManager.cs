@@ -1,7 +1,9 @@
+using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+[AutoStaticsCleanup]
+public partial class UIManager : MonoBehaviour
 {
     public static UIManager instance{ get; private set;}
     public Image interactImg;
