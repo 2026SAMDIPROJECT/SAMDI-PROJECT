@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class PlayerInteract : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactionLayer;
-    [SerializeField] private Image interactionUI;
-    [SerializeField] private Image interactionFill;
+    private Image interactionUI;
+    private Image interactionFill;
     [SerializeField] private float interval;
     [SerializeField] private float distance;
     [SerializeField] Camera cam;
@@ -31,10 +31,16 @@ public class PlayerInteract : NetworkBehaviour
             if(playerInput != null)
                 playerInput.enabled = true;
         }
+        if(UIManager.instance != null)
+        {
+            interactionUI = UIManager.instance.interactImg;
+            interactionFill = UIManager.instance.fillImg;
+        }
     }
 
     private void Update()
     {
+        if(!IsOwner) return;
         if(ishold && isInteract)
         {
             holdTime.RunTimer(); // 타이머 실행
