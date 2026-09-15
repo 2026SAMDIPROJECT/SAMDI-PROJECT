@@ -57,3 +57,10 @@ jobs:
         with:
           name: Windows-Build
           path: build/StandaloneWindows64
+
+      - name: Return Unity License
+        uses: game-ci/unity-return-license@v4
+        if: always()
+        env:
+          UNITY_EMAIL: ${{ env.CHECK_EMAIL }}
+          UNITY_PASSWORD: ${{ env.CHECK_PASSWORD }}
