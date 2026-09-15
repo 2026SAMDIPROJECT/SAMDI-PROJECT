@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8405665628443161458}
   - component: {fileID: 1586383742828589057}
   - component: {fileID: 3406786199901562950}
+  - component: {fileID: 6974370634306862644}
   m_Layer: 5
   m_Name: RootCanvas
   m_TagString: Untagged
@@ -104,50 +105,23 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!1 &579023540878892339
-GameObject:
+--- !u!114 &6974370634306862644
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3955343858532691007}
-  - component: {fileID: 3801706321818376495}
-  m_Layer: 5
-  m_Name: ItemContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &3955343858532691007
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579023540878892339}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2078920138967645140}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 902.5, y: -560}
-  m_SizeDelta: {x: -965, y: -620}
-  m_Pivot: {x: 0, y: 1}
---- !u!222 &3801706321818376495
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579023540878892339}
-  m_CullTransparentMesh: 1
+  m_GameObject: {fileID: 331301970161932211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 775279a6a79b647aebb7552138bb8c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
+  inventoryCanvas: {fileID: 5272330751320438435}
+  gridContainer: {fileID: 6097386736055206545}
+  slotPrefab: {fileID: -6047382806937055319, guid: 30abb42473ca2407aa940f5f1b015381, type: 3}
+  totalSlot: 23
+  columns: 7
 --- !u!1 &913773628749095425
 GameObject:
   m_ObjectHideFlags: 0
@@ -588,7 +562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78fcfaa26f9b94cdcbfcc3ef84853013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerOpenInv
-  inventory: {fileID: 8750343609557859015}
+  inventory: {fileID: 6974370634306862644}
 --- !u!1 &3126903478177584737
 GameObject:
   m_ObjectHideFlags: 0
@@ -1269,14 +1243,13 @@ GameObject:
   - component: {fileID: 2202245651018754076}
   - component: {fileID: 4315175201537131656}
   - component: {fileID: 5101165904096748625}
-  - component: {fileID: 8750343609557859015}
   m_Layer: 5
   m_Name: InventoryCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2078920138967645140
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1290,7 +1263,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2360287724589999091}
-  - {fileID: 3955343858532691007}
   m_Father: {fileID: 7902945043417680934}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1362,22 +1334,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &8750343609557859015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5272330751320438435}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 775279a6a79b647aebb7552138bb8c9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Inventory
-  InventoryCanvas: {fileID: 5272330751320438435}
-  gridContainer: {fileID: 6097386736055206545}
-  slotPrefab: {fileID: -6047382806937055319, guid: 30abb42473ca2407aa940f5f1b015381, type: 3}
-  totalSlot: 21
 --- !u!1 &6286766328157476404
 GameObject:
   m_ObjectHideFlags: 0
@@ -1590,7 +1546,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0.14738108, g: 0.9433962, b: 0, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1667,7 +1623,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.8156863}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1700,13 +1656,13 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 4
-  m_StartCorner: 1
-  m_StartAxis: 1
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
   m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 2, y: 2}
+  m_Spacing: {x: 0, y: 0}
   m_Constraint: 1
-  m_ConstraintCount: 7
+  m_ConstraintCount: 5
 --- !u!114 &5059583067921007469
 MonoBehaviour:
   m_ObjectHideFlags: 0

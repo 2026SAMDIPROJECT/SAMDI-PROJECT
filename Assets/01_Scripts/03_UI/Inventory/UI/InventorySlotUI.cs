@@ -5,13 +5,23 @@ using UnityEngine.UI;
 public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     [SerializeField] private Image itemIcon;
+    [SerializeField] private CanvasGroup canvasGroup;
+    public Vector2Int Cell {get; private set;}
+    private InventoryGrid grid;
 
-    public int SlotIndex {get; private set;}
-
-    public void Init(int index)
+    public void Init(Vector2Int cell, InventoryGrid grid, bool isRealSlot)
     {
-        SlotIndex = index;
+        Cell = cell;
+        this.grid = grid;
         ClearSlot();
+        SetInteractable(isRealSlot);
+    }
+    public void SetInteractable(bool interactable)
+    {
+        if (canvasGroup == null) return;
+        canvasGroup.interactable = interactable;
+        canvasGroup.blocksRaycasts = interactable;
+        canvasGroup.alpha = interactable ? 1f : 0f;
     }
     public void UpdateSlot(Sprite icon)
     {
@@ -30,9 +40,11 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
         itemIcon.sprite = null;
         itemIcon.enabled = false;
     }
+
     public void OnPointerClick(PointerEventData eventData)
     {
-        // TODO: 클릭시 아이템 정보 표시 또는 사용
+        if (grid.TryGetItemAt(Cell, out InventoryGrid.PlacedItemInfo info))
+            Debug.Log($"클릭한 아이템 : {info.item.name}");
     }
     public void OnDrop(PointerEventData eventData)
     {
