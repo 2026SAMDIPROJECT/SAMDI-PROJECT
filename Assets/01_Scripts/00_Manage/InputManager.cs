@@ -1,8 +1,10 @@
 using System;
+using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : MonoBehaviour
+[AutoStaticsCleanup]
+public partial class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
 
