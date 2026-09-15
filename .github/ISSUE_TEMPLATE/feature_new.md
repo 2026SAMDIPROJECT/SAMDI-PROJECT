@@ -1,8 +1,10 @@
---- 
-name: "Feature Request"
-about: "기능 추가를 위한 템플릿 입니다."
+---
+name: Feature Request
+about: 기능 추가를 위한 템플릿 입니다.
 title: "[Feature]"
-labels: ["feature"]
+labels: feature
+assignees: ''
+
 ---
 
 ## 기능 설명
@@ -14,4 +16,4 @@ labels: ["feature"]
 ## 구현 단계
 1. 
 2. 
-3. 
+3.

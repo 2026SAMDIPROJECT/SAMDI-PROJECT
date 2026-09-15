@@ -1,30 +1,25 @@
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMove : NetworkBehaviour
 {
     [SerializeField] private Rigidbody rigid;
     [SerializeField] private Vector2 moveInput;
     [SerializeField] private float moveSpeed;
-    [SerializeField] private PlayerInput playerInput;
     [SerializeField] private Camera cam;
     [SerializeField] private LayerMask interactionLayer;
     [SerializeField] private float detectRadius;
     [SerializeField] private float checkInterval;
 
-    public void OnMove(InputAction.CallbackContext value)
+    private void HandleMove(Vector2 value)
     {
-        if(!IsOwner) return;
-        moveInput = value.ReadValue<Vector2>();
+        moveInput = value;
     }
 
     public override void OnNetworkSpawn()
     {
         if(!IsOwner)
         {
-            if(playerInput != null)
-                playerInput.enabled = false;
             if(cam != null)
                 cam.gameObject.SetActive(false);
         }
@@ -33,9 +28,19 @@ public class PlayerMove : NetworkBehaviour
             Camera main = Camera.main;
             if(main != null && main != cam)
                 main.gameObject.SetActive(false);
-            if(playerInput != null)
-                playerInput.enabled = true; // 혹시 모르는 인펏 활성화
+
+            if(InputManager.Instance != null)
+                InputManager.Instance.MoveEvent += HandleMove;
+            else
+                Debug.LogWarning("InputManager.Instance가 null입니다. 씬에 InputManager가 있는지 확인하세요.");
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if(!IsOwner) return;
+        if(InputManager.Instance != null)
+            InputManager.Instance.MoveEvent -= HandleMove;
     }
 
     private void FixedUpdate()

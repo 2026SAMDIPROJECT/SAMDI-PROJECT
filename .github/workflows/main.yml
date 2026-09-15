@@ -1,0 +1,59 @@
+name: Build Unity Project (Windows)
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  buildForWindows:
+    name: Build for Windows 🖥️
+    runs-on: ubuntu-latest
+    
+    # 1. 안전하게 검사하기 위해 시크릿 값을 잡 레벨의 env로 우회 등록합니다.
+    env:
+      CHECK_SERIAL: ${{ secrets.UNITY_SERIAL }}
+      CHECK_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      CHECK_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+    steps:
+      # 1. 소스 코드 가져오기
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # 2. 유니티 Library 폴더 캐싱
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: |
+            Library-
+
+      # 3. GameCI를 이용한 Windows 64비트 빌드
+      - name: Run Unity Builder
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_EMAIL: ${{ env.CHECK_EMAIL }}
+          UNITY_PASSWORD: ${{ env.CHECK_PASSWORD }}
+          UNITY_SERIAL: ${{ env.CHECK_SERIAL }}
+        with:
+          targetPlatform: StandaloneWindows64
+
+      # 4. [오류 수정] 빌드 결과물(Artifact) 저장 공식 플러그인 이름 수정
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Build
+          path: build/StandaloneWindows64
