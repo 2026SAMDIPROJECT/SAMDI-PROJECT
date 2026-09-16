@@ -1,0 +1,19 @@
+{
+    "name": "01_PlayerAsmdef",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0b80444dd20d3465e9abf8cf49853cff",
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:c88c97f16d0cf44e690cdf2e95ab2711"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
