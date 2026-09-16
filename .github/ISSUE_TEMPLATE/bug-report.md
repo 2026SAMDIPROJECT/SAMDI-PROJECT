@@ -2,7 +2,7 @@
 name: Bug Report
 about: 버그 발생 시 템플릿
 title: "{BUG}"
-labels: bug
+labels: bug, refactor
 assignees: ''
 type: Bug
 
@@ -16,3 +16,5 @@ type: Bug
 ## 버그에 대한 설명
 - 
 -
+--- 
+Closes #[이슈번호]
