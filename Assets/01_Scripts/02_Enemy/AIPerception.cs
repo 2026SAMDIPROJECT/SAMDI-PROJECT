@@ -42,12 +42,7 @@ public class AIPerception : NetworkBehaviour
             player = PlayerRegistry.Instance?.GetNearestPlayer(transform.position); // 오류 :: 이 함수 실행 안 해서 가장 먼저 나오는 호스트만 쫒아감
         }
     }
-    // 적 시점 안에 들어왔는지 판별
-    public bool PlayerInRange()
-    {
-        if (player == null) return false;
-        return (player.position - transform.position).sqrMagnitude <= sqrDetectionRange;
-    }
+    
     // 적이 플레이어를 감지했는지 판별 감지
     public bool CanSeePlayer()
     {
