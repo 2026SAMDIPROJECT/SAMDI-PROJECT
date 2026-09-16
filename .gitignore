@@ -42,6 +42,9 @@
 # Visual Studio cache directory
 .vs/
 
+# JetBrains Rider project settings
+.idea/
+
 .DS_Store
 .vscode/
 

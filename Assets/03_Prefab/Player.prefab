@@ -19,7 +19,6 @@ GameObject:
   - component: {fileID: 3078941080243829733}
   - component: {fileID: -8750525816131274393}
   - component: {fileID: 3662207673520251767}
-  - component: {fileID: 2053053469000480594}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -193,7 +192,6 @@ MonoBehaviour:
   rigid: {fileID: 3774019371880232733}
   moveInput: {x: 0, y: 0}
   moveSpeed: 10
-  playerInput: {fileID: 286384858474830655}
   cam: {fileID: 3238737714609023574}
   interactionLayer:
     serializedVersion: 2
@@ -392,26 +390,10 @@ MonoBehaviour:
   interactionLayer:
     serializedVersion: 2
     m_Bits: 8
-  interactionUI: {fileID: 0}
-  interactionFill: {fileID: 0}
   interval: 0.15
   distance: 3
   cam: {fileID: 3238737714609023574}
-  playerInput: {fileID: 286384858474830655}
 --- !u!114 &3662207673520251767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 913773628749095425}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c6555eeb9077412cb2774e8d573d2d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerNetWorkInit
-  ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &2053053469000480594
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
