@@ -18,6 +18,7 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] private TMP_Text hostCode;
     [SerializeField] private TMP_InputField clientCode;
     [SerializeField] private LoadingManager loadingManage;
+    [SerializeField] private VivoxManager vivoxManager;
 
     private async void Start()
     {
@@ -33,6 +34,8 @@ public class NetworkManagerUI : MonoBehaviour
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             Debug.Log($"익명 로그인 :: {AuthenticationService.Instance.PlayerId}");
         }
+
+        await vivoxManager.InitializeVivoxAsync();
 
         loadingManage.Hide();
 
