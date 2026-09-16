@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class PlayerInteract : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactionLayer;
-    [SerializeField] private Image interactionUI;
-    [SerializeField] private Image interactionFill;
+    private Image interactionUI;
+    private Image interactionFill;
     [SerializeField] private float interval;
     [SerializeField] private float distance;
     [SerializeField] Camera cam;
@@ -26,6 +26,12 @@ public class PlayerInteract : NetworkBehaviour
             InputManager.Instance.InteractEvent += HandleInteract;
         else
             Debug.LogWarning("InputManager.Instance가 null입니다. 씬에 InputManager가 있는지 확인하세요.");
+            
+        if(UIManager.instance != null)
+        {
+            interactionUI = UIManager.instance.interactImg;
+            interactionFill = UIManager.instance.fillImg;
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -37,6 +43,7 @@ public class PlayerInteract : NetworkBehaviour
 
     private void Update()
     {
+        if(!IsOwner) return;
         if(ishold && isInteract)
         {
             holdTime.RunTimer(); // 타이머 실행
