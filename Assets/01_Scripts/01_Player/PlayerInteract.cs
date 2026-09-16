@@ -75,6 +75,7 @@ public class PlayerInteract : NetworkBehaviour
 
     private void HandleInteract(InputAction.CallbackContext callback)
     {
+        if(interactTarget == null) return;
         if(callback.started)
         {
             if(callback.interaction is HoldInteraction hold)
