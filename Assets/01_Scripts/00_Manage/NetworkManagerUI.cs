@@ -68,6 +68,8 @@ public class NetworkManagerUI : MonoBehaviour
             RelayServerData serverData = AllocationUtils.ToRelayServerData(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(serverData);
 
+            await vivoxManager.JoinChannel(code);
+
             NetworkManager.Singleton.StartHost(); // 호스트 시작
             DisableUI();
         }
@@ -97,6 +99,8 @@ public class NetworkManagerUI : MonoBehaviour
 
             RelayServerData serverData = AllocationUtils.ToRelayServerData(joinAllocation, "dtls"); // 서버 데이터 바꿈
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(serverData); // 이 코드로 서버 찾음
+
+            await vivoxManager.JoinChannel(code);
 
             NetworkManager.Singleton.StartClient(); // 클라이언트 시작
             DisableUI();

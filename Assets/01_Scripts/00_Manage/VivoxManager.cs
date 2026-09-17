@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Services.Core;
 using Unity.Services.Vivox;
+using System;
 
 public class VivoxManager : MonoBehaviour
 {
@@ -51,5 +52,10 @@ public class VivoxManager : MonoBehaviour
     private async Awaitable LoginVivox(LoginOptions option)
     {
         await VivoxService.Instance.LoginAsync(option);
+    }
+
+    public async Awaitable JoinChannel(string code)
+    {
+        await VivoxService.Instance.JoinGroupChannelAsync(code, ChatCapability.AudioOnly);
     }
 }
