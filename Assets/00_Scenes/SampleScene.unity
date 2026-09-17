@@ -2018,6 +2018,8 @@ GameObject:
   - component: {fileID: 859524561}
   - component: {fileID: 859524562}
   - component: {fileID: 859524563}
+  - component: {fileID: 859524565}
+  - component: {fileID: 859524564}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -2282,6 +2284,33 @@ MonoBehaviour:
   m_DefaultActionMap: 
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &859524564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 859524556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb98dbba760548c2873327631614af9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 01_ManageAsmdef::LoadingManager
+  loadingBoard: {fileID: 1470937802}
+  loadingCount: 0
+--- !u!114 &859524565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 859524556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bec895e466a1b42a2819b0675c0db524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 01_ManageAsmdef::VivoxManager
+  loadingManage: {fileID: 859524564}
 --- !u!1 &1005705233
 GameObject:
   m_ObjectHideFlags: 0
@@ -3003,7 +3032,8 @@ MonoBehaviour:
   clientBnt: {fileID: 484669815}
   hostCode: {fileID: 226019855}
   clientCode: {fileID: 463311245}
-  loadingBoard: {fileID: 1470937802}
+  loadingManage: {fileID: 859524564}
+  vivoxManager: {fileID: 859524565}
 --- !u!1 &1470937802
 GameObject:
   m_ObjectHideFlags: 0
