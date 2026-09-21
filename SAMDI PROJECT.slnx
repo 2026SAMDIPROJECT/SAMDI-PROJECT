@@ -1,4 +1,8 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="01_ManageAsmdef.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="01_PlayerAsmdef.csproj" />
+  <Project Path="01_EnemyAsmdef.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="01_UtileAsmdef.csproj" />
 </Solution>
