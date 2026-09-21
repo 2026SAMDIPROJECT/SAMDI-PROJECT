@@ -13,7 +13,7 @@ public class InventoryGrid
 
     // UI가 구독할 이벤트
     public event Action<PlacedItemInfo> OnItemPlaced;
-    // public event Action<PlacedItemInfo> OnItemRemoved;
+    public event Action<PlacedItemInfo> OnItemRemoved;
 
     public InventoryGrid(int width, int height)
     {
@@ -60,7 +60,7 @@ public class InventoryGrid
                 gridSlotOccupied[x,y] = false;
                 placedItem.Remove(new Vector2Int(x,y));
             }
-        OnItemPlaced?.Invoke(info);
+        OnItemRemoved?.Invoke(info);
         return true;
     }
     // 자동 획득용: 빈 공간(X, Y) 찾기
@@ -77,6 +77,27 @@ public class InventoryGrid
         foundX = -1;
         foundY = -1;
         return false;
+    }
+    public bool CanPlaceIgnoring(ItemData item, int startX, int startY, Vector2Int ignoreOrigin, ItemData ignoreItem)
+    {
+        if (startX < 0 || startY < 0 || startX + item.width > gridWidth || startY + item.height > gridHeight)
+            return false;
+
+        for (int x = startX; x < startX + item.width; x++)
+        {
+            for (int y = startY; y < startY + item.height; y++)
+            {
+                bool occupied = gridSlotOccupied[x, y];
+
+                // 검사 대상 칸이 자기 자신이 있던 자리 범위 안이면 점유되지 않은 것으로 취급
+                bool isSelfCell =
+                    x >= ignoreOrigin.x && x < ignoreOrigin.x + ignoreItem.width &&
+                    y >= ignoreOrigin.y && y < ignoreOrigin.y + ignoreItem.height;
+
+                if (occupied && !isSelfCell) return false;
+            }
+        }
+        return true;
     }
     public bool TryGetItemAt(Vector2Int cell, out PlacedItemInfo info)
     {
