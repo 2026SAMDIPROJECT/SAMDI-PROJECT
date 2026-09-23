@@ -1,123 +1,126 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+
 public class InventoryGrid
 {
-    public int gridWidth { get; private set; }
-    public int gridHeight { get; private set; }
-    
-    // true: 이미 아이템이 차지함, false: 빈 공간
-    private bool[,] gridSlotOccupied;
-    // 칸에서 아이템으로 역추적을 위한 코드
-    private Dictionary<Vector2Int, PlacedItemInfo> placedItem = new Dictionary<Vector2Int, PlacedItemInfo>();
+    public int Width { get; }
+    public int Height { get; }
+    public int TotalSlot { get; private set;}
 
-    // UI가 구독할 이벤트
+    // Dictionary 대신 1차원 Flat 배열로 관리를 더 쉽게함
+    private readonly PlacedItemInfo[] gridArray;
+    private readonly bool[] lockedCells;
+
     public event Action<PlacedItemInfo> OnItemPlaced;
     public event Action<PlacedItemInfo> OnItemRemoved;
 
-    public InventoryGrid(int width, int height)
+    public void SetTotalSlot(int total)
     {
-        gridWidth = width;
-        gridHeight = height;
-        gridSlotOccupied = new bool[width, height];
+        TotalSlot += total;
     }
 
-    // (startX, startY) 위치에 itemData(w, h)를 놓을 수 있는지 검사
-    public bool CanPlaceItem(ItemData item, int startX, int startY)
+    public InventoryGrid(int width, int height)
     {
-        if (startX < 0 || startY < 0 || startX + item.width > gridWidth || startY + item.height > gridHeight)
-            return false; // 그리드 범위를 벗어남
+        Width = width;
+        Height = height;
+        gridArray = new PlacedItemInfo[width * height];
+        lockedCells = new bool[width * height];
+    }
 
-        for (int x = startX; x < startX + item.width; x++)
-            for (int y = startY; y < startY + item.height; y++)
-                if (gridSlotOccupied[x, y]) return false; // 이미 다른 아이템이 있음
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private int ToIndex(int x, int y) => y * Width + x;
+
+    public bool IsValidCell(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
+
+    public bool CanPlaceItem(ItemData item, int startX, int startY, PlacedItemInfo ignoreInfo = null)
+    {
+        if (item == null) return false;
+        if (startX < 0 || startY < 0 || startX + item.width > Width || startY + item.height > Height)
+            return false;
+
+        for (int y = startY; y < startY + item.height; y++)
+        {
+            for (int x = startX; x < startX + item.width; x++)
+            {
+                int idx = ToIndex(x, y);
+                if (lockedCells[idx]) return false;
+
+                var currentInfo = gridArray[idx];
+                if (currentInfo != null && currentInfo != ignoreInfo)
+                    return false;
+            }
+        }
         return true;
     }
 
-    // 아이템 배치 (점유 처리)
-    public void PlaceItem(ItemData item, int startX, int startY)
+    public bool PlaceItem(ItemData item, int startX, int startY)
     {
+        if (!CanPlaceItem(item, startX, startY)) return false;
+
         var info = new PlacedItemInfo(item, new Vector2Int(startX, startY));
-        for (int x = startX; x < startX + item.width; x++)
-            for (int y = startY; y < startY + item.height; y++)
+        for (int y = startY; y < startY + item.height; y++)
+        {
+            for (int x = startX; x < startX + item.width; x++)
             {
-                gridSlotOccupied[x, y] = true;
-                placedItem[new Vector2Int(x,y)] = info; // 역추적
+                gridArray[ToIndex(x, y)] = info;
             }
+        }
+
         OnItemPlaced?.Invoke(info);
+        return true;
     }
-    // 아이템 제거 기능
-    public bool RemoveItemAt(Vector2Int cell)
+
+    public bool RemoveItem(PlacedItemInfo info)
     {
-        if (!placedItem.TryGetValue(cell, out var info)) return false;
+        if (info == null) return false;
 
-        var item = info.item;
         var origin = info.origin;
+        var item = info.item;
 
-        for(int x = origin.x; x < origin.x + item.width ; x++) 
-            for (int y = origin.y; y < origin.y + item.height ; y++)
+        for (int y = origin.y; y < origin.y + item.height; y++)
+        {
+            for (int x = origin.x; x < origin.x + item.width; x++)
             {
-                gridSlotOccupied[x,y] = false;
-                placedItem.Remove(new Vector2Int(x,y));
+                int idx = ToIndex(x, y);
+                if (gridArray[idx] == info)
+                {
+                    gridArray[idx] = null;
+                }
             }
+        }
+
         OnItemRemoved?.Invoke(info);
         return true;
     }
-    // 자동 획득용: 빈 공간(X, Y) 찾기
+
+    public PlacedItemInfo GetItemAt(int x, int y)
+    {
+        if (!IsValidCell(x, y)) return null;
+        return gridArray[ToIndex(x, y)];
+    }
+
     public bool FindEmptySpace(ItemData item, out int foundX, out int foundY)
     {
-        for (int y = 0; y <= gridHeight - item.height; y++)
-            for (int x = 0; x <= gridWidth - item.width; x++)
+        for (int y = 0; y <= Height - item.height; y++)
+        {
+            for (int x = 0; x <= Width - item.width; x++)
+            {
                 if (CanPlaceItem(item, x, y))
                 {
                     foundX = x;
                     foundY = y;
                     return true;
                 }
+            }
+        }
         foundX = -1;
         foundY = -1;
         return false;
     }
-    public bool CanPlaceIgnoring(ItemData item, int startX, int startY, Vector2Int ignoreOrigin, ItemData ignoreItem)
-    {
-        if (startX < 0 || startY < 0 || startX + item.width > gridWidth || startY + item.height > gridHeight)
-            return false;
 
-        for (int x = startX; x < startX + item.width; x++)
-        {
-            for (int y = startY; y < startY + item.height; y++)
-            {
-                bool occupied = gridSlotOccupied[x, y];
-
-                // 검사 대상 칸이 자기 자신이 있던 자리 범위 안이면 점유되지 않은 것으로 취급
-                bool isSelfCell =
-                    x >= ignoreOrigin.x && x < ignoreOrigin.x + ignoreItem.width &&
-                    y >= ignoreOrigin.y && y < ignoreOrigin.y + ignoreItem.height;
-
-                if (occupied && !isSelfCell) return false;
-            }
-        }
-        return true;
-    }
-    public bool TryGetItemAt(Vector2Int cell, out PlacedItemInfo info)
+    public void LockCell(int x, int y)
     {
-        return placedItem.TryGetValue(cell, out info);
-    }
-    // 불규칙한 수 (예: 줄 한개가 5개인데 23칸의 슬롯이 있으면 나머지 2개는 막음)
-    public void LockCell (int x, int y)
-    {
-        if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight)
-            gridSlotOccupied[x,y] = true;
-    }
-    public class PlacedItemInfo
-    {
-        public ItemData item {get;}
-        public Vector2Int origin {get;}
-
-        public PlacedItemInfo(ItemData data, Vector2Int Origin)
-        {
-            item = data;
-            origin = Origin;
-        }
+        if (IsValidCell(x, y))
+            lockedCells[ToIndex(x, y)] = true;
     }
 }

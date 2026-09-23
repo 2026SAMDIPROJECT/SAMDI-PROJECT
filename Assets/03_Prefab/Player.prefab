@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: -8750525816131274393}
   - component: {fileID: 3662207673520251767}
   - component: {fileID: 7743437701658395717}
+  - component: {fileID: -6634893277806859449}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -545,6 +546,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerOpenInv
   inventory: {fileID: 3569067591640224737}
+--- !u!114 &-6634893277806859449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913773628749095425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f69de0ed3623b4f8f9f18b80f4dfdbf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventoryHolder
+  ShowTopMostFoldoutHeaderGroup: 1
+  totalSlot: 20
+  columns: 5
+  inventoryUI: {fileID: 3569067591640224737}
 --- !u!1 &3126903478177584737
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,8 +1315,6 @@ MonoBehaviour:
   itemPrefab: {fileID: 5488727995671747440, guid: 9e23252479d464f87ba34d7e9ba84d1f, type: 3}
   canvas: {fileID: 2202245651018754076}
   dragGhost: {fileID: 4296210006924629059}
-  totalSlot: 20
-  columns: 5
 --- !u!1 &5231077297583923036
 GameObject:
   m_ObjectHideFlags: 0
@@ -1474,7 +1489,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.00012207031, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &2202245651018754076
 Canvas:
@@ -1864,7 +1879,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 4
+  m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 64, y: 64}

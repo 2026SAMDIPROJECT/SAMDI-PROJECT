@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class ItemLayerRenderer
 {
@@ -10,8 +11,9 @@ public class ItemLayerRenderer
     private readonly Vector2 spacing;
     private readonly InvDragController dragController;
 
-    private readonly Dictionary<InventoryGrid.PlacedItemInfo, ItemUI> spawndIcon 
-        = new Dictionary<InventoryGrid.PlacedItemInfo, ItemUI>();
+    private readonly Dictionary<PlacedItemInfo, ItemUI> spawndIcon 
+        = new Dictionary<PlacedItemInfo, ItemUI>();
+    private readonly IObjectPool<ItemUI> itemUiPool;
     
     public ItemLayerRenderer(InventoryGrid grid, Transform itemLayer, ItemUI itemPrefab, Vector2 cellSize, Vector2 spacing, InvDragController dragController)
     {
@@ -22,6 +24,16 @@ public class ItemLayerRenderer
         this.spacing = spacing;
         this.dragController = dragController;
 
+        itemUiPool = new ObjectPool<ItemUI> (
+            createFunc: () => Object.Instantiate(this.itemPrefab, this.itemLayer),
+            actionOnGet: itemUi => itemUi.gameObject.SetActive(true),
+            actionOnRelease: itemUi => itemUi.gameObject.SetActive(false),
+            actionOnDestroy: itemUi => Object.Destroy(itemUi.gameObject),
+            collectionCheck: true,
+            defaultCapacity: 10,
+            maxSize: 50
+        );
+
         grid.OnItemPlaced += HandleItemPlaced;
         grid.OnItemRemoved += HandleItemRemoved;
     }
@@ -30,17 +42,17 @@ public class ItemLayerRenderer
         grid.OnItemPlaced -= HandleItemPlaced;
         grid.OnItemRemoved -= HandleItemRemoved;
     }
-    private void HandleItemPlaced(InventoryGrid.PlacedItemInfo info)
+    private void HandleItemPlaced(PlacedItemInfo info)
     {
-        ItemUI icon = Object.Instantiate(itemPrefab, itemLayer);
+        ItemUI icon = itemUiPool.Get();
         icon.Setup(info, cellSize, spacing, dragController);
         spawndIcon[info] = icon;
     }
-    private void HandleItemRemoved(InventoryGrid.PlacedItemInfo info)
+    private void HandleItemRemoved(PlacedItemInfo info)
     {
         if (spawndIcon.TryGetValue(info, out ItemUI icon))
         {
-            Object.Destroy(icon.gameObject);
+            itemUiPool.Release(icon);
             spawndIcon.Remove(info);
         }
     }

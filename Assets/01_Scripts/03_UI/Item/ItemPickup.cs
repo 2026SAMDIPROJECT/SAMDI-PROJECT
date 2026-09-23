@@ -4,26 +4,39 @@ using UnityEngine;
 public class ItemPickup : InteractiveObject
 {
     [SerializeField] private ItemData itemData;
-    private NetworkObject netObj;
-
-    private void Awake()
-    {
-        netObj = GetComponent<NetworkObject>();
-    }
     public override void Interact(PlayerInteract interactor)
     {
+        if (!interactor.IsOwner) return;
+        if (!IsSpawned) return;
         RequestPickUpServerRpc(interactor.OwnerClientId);
     }
     [Rpc(SendTo.Server)]
     private void RequestPickUpServerRpc(ulong requesterClientId)
     {
         // 서버에서 아이템 줍는 것을 검증함
-        var requesterObject = NetworkManager.Singleton.ConnectedClients[requesterClientId].PlayerObject;
+        if(!NetworkManager.Singleton.ConnectedClients.TryGetValue(requesterClientId, out var client)) return;
         
-        if (!requesterObject.TryGetComponent(out PlayerInteract playerInteract)) return;
-        if (playerInteract.inventoryUI == null) return;
+        var playerObj = client.PlayerObject;
+        if (!playerObj.TryGetComponent(out PlayerInventoryHolder inventoryHolder)) return;
 
-        bool added = playerInteract.inventoryUI.AddItem(itemData);
-        if (added) GetComponent<NetworkObject>().Despawn();
+        var grid = inventoryHolder.ServerInventory;
+        if (grid == null) return;
+        if (grid.FindEmptySpace(itemData, out int x, out int y))
+        {
+           bool added = grid.PlaceItem(itemData, x, y);
+           if(added)
+            {
+                if (TryGetComponent(out NetworkObject netObj) && netObj.IsSpawned)
+                {
+                    DisableItemClientRpc();
+                    netObj.Despawn(false);
+                }
+            }
+        }
+    }
+    [Rpc(SendTo.ClientsAndHost)]
+    private void DisableItemClientRpc()
+    {
+        gameObject.SetActive(false);
     }
 }

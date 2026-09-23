@@ -8,10 +8,14 @@ public static class GridCoordinateConverter
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             gridContainer, screenPos, cam, out Vector2 localPoint
         );
-        // gridContainer 피벗을 몇으로 할지 잘 몰라서 일단 (0,1) 좌상단 기준으로 맞춤
-        int x = Mathf.FloorToInt(localPoint.x/ (cellSize.x + spacing.x));
-        int y = Mathf.FloorToInt(-localPoint.y/ (cellSize.y + spacing.y));
 
+        Rect rect = gridContainer.rect; // 피벗 (0,1)로 로컬 포인트 좌표계 정규화
+        float localX = localPoint.x - rect.xMin;
+        float localY = rect.yMax - localPoint.y;
+
+        int x = Mathf.FloorToInt(localX / (cellSize.x + spacing.x));
+        int y = Mathf.FloorToInt(localY / (cellSize.y + spacing.y));
+ 
         return new Vector2Int(x,y);
     }
 }

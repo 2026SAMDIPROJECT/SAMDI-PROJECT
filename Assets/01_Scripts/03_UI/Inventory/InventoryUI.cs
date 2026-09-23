@@ -12,9 +12,6 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] private DragGhost dragGhost;
 
-    [SerializeField] private int totalSlot = 20;
-    [SerializeField] private int columns = 5;
-
     private SlotPool slotPool;
     private InventoryGrid grid;
     private GridLayoutGroup gridLayoutGroup;
@@ -23,26 +20,31 @@ public class InventoryUI : MonoBehaviour
 
     private void Awake()
     {
-        ConnectGridLayout();
+        // ConnectGridLayout();
 
-        grid = InventoryGridBuilder.Build(totalSlot, columns);
-        slotPool = new SlotPool(slotPrefab, gridContainer);
-        var layoutGroup = gridContainer.GetComponent<GridLayoutGroup>();
+        // grid = InventoryGridBuilder.Build(totalSlot, columns);
+        // slotPool = new SlotPool(slotPrefab, gridContainer);
+        // var layoutGroup = gridContainer.GetComponent<GridLayoutGroup>();
         
-        dragController = new InvDragController(grid, dragGhost, gridContainer.GetComponent<RectTransform>(), canvas.worldCamera, layoutGroup.cellSize, layoutGroup.spacing);
-        itemLayerRenderer = new ItemLayerRenderer (grid, itemLayer, itemPrefab, layoutGroup.cellSize, layoutGroup.spacing, dragController);
+        // dragController = new InvDragController(grid, dragGhost, gridContainer.GetComponent<RectTransform>(), canvas.worldCamera, layoutGroup.cellSize, layoutGroup.spacing);
+        // itemLayerRenderer = new ItemLayerRenderer (grid, itemLayer, itemPrefab, layoutGroup.cellSize, layoutGroup.spacing, dragController);
 
-        GenerateSlot();
+        // // GenerateSlot();
+        // UI 초기화만 진행하도록 변경
+        if (slotPool == null && slotPrefab != null && gridContainer != null)
+        {
+            slotPool = new SlotPool(slotPrefab, gridContainer);
+        }
     }
     private void OnDestroy() // 메모리 누수 방지
     {
         itemLayerRenderer?.Dispose();
     }
-    private void OnValidate()
-    {
-        ConnectGridLayout();
-    }
-    private void ConnectGridLayout()
+    // private void OnValidate()
+    // {
+    //     ConnectGridLayout(grid.Width);
+    // }
+    private void ConnectGridLayout(int columnCount)
     {
         if (gridContainer == null) return;
 
@@ -50,7 +52,32 @@ public class InventoryUI : MonoBehaviour
         if (gridLayoutGroup == null) return;
 
         gridLayoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        gridLayoutGroup.constraintCount = columns;
+        gridLayoutGroup.constraintCount = columnCount;
+    }
+    public void BindInventory(InventoryGrid targetGrid)
+    {
+        itemLayerRenderer?.Dispose();
+        
+        this.grid = targetGrid;
+
+        if (slotPool == null)
+        {
+            slotPool = new SlotPool(slotPrefab, gridContainer);
+        }
+        ConnectGridLayout(grid.Width);
+        
+        var layoutGroup = gridContainer.GetComponent<GridLayoutGroup>();
+        dragController = new InvDragController(
+            grid, 
+            dragGhost, 
+            gridContainer.GetComponent<RectTransform>(),
+            canvas.worldCamera,
+            layoutGroup.cellSize,
+            layoutGroup.spacing
+        );
+        itemLayerRenderer = new ItemLayerRenderer(grid,itemLayer,itemPrefab,layoutGroup.cellSize,layoutGroup.spacing,dragController);
+
+        GenerateSlot();
     }
     public bool AddItem(ItemData item)
     {
@@ -68,16 +95,16 @@ public class InventoryUI : MonoBehaviour
     }
     public void GenerateSlot()
     {
-        slotPool.ReleaseAll();
+        slotPool?.ReleaseAll();
 
-        int totalCells = grid.gridWidth * grid.gridHeight;
+        int totalCells = grid.Width * grid.Height;
         Debug.Log($"totalCells = {totalCells}");
 
         for (int i = 0; i < totalCells; i++)
         {
             InventorySlotUI slotUI = slotPool.Get();
-            Vector2Int cell = new Vector2Int(i % columns, i / columns);
-            bool isRealSlot = i < totalSlot;
+            Vector2Int cell = new Vector2Int(i % grid.Width, i / grid.Width);
+            bool isRealSlot = i < grid.TotalSlot;
 
             slotUI.Init(cell, grid, isRealSlot);
         }

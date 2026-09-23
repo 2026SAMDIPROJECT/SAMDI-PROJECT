@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8938427736937867885}
   - component: {fileID: 7310437292871814721}
   - component: {fileID: 5333471701945079564}
+  - component: {fileID: -5075900807714288028}
   - component: {fileID: 5488727995671747440}
   m_Layer: 5
   m_Name: ItemImage
@@ -76,6 +77,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &-5075900807714288028
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5671887634000795944}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &5488727995671747440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,3 +102,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemUI
   itemIcon: {fileID: 5333471701945079564}
+  canvasGroup: {fileID: -5075900807714288028}
+  rectTransform: {fileID: 8938427736937867885}

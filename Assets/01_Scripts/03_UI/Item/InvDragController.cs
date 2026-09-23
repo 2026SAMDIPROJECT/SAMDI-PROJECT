@@ -9,7 +9,7 @@ public class InvDragController
     private readonly Vector2 cellSize;
     private readonly Vector2 spacing;
 
-    private InventoryGrid.PlacedItemInfo draggingItem;
+    private PlacedItemInfo draggingItem;
     private Vector2Int currentTargetcell;
     private bool currentTargetValid;
 
@@ -28,13 +28,8 @@ public class InvDragController
         float h = cellSize.y * item.height + spacing.y * (item.height - 1);
         return new Vector2(w,h);
     }
-    private bool CanPlaceIgnoringSelf(InventoryGrid.PlacedItemInfo item, Vector2Int targetCell)
-    {
-        //자기 자신 위치는 임시로 비웠다가 검사 후 복구함
-        return grid.CanPlaceIgnoring(item.item, targetCell.x, targetCell.y, item.origin, item.item);
-    }
 
-    public void BeginDrag(InventoryGrid.PlacedItemInfo item)
+    public void BeginDrag(PlacedItemInfo item)
     {
         draggingItem = item;
         ghost.show(item.item.itemIcon, CalcSize(item.item));
@@ -44,10 +39,12 @@ public class InvDragController
         if (draggingItem == null) return;
 
         ghost.UpdatePosition(screenPos);
-
-        currentTargetcell = GridCoordinateConverter.WorldToCell(gridContainer, screenPos, uiCamera, cellSize, spacing);
+        // 마우스 커서 위치 셀 좌표로 변환 및 origin(피벗)을 드래그 기준점으로 잡음
+        Vector2Int mouseCell = GridCoordinateConverter.WorldToCell(gridContainer, screenPos, uiCamera, cellSize, spacing);
+        currentTargetcell = mouseCell;
+        
         // 자기 자신이 있었던 칸은 비운 상태로 가정하고 검사해야하므로, 제자리 이동도 유효하게 판단되도록 처리
-        currentTargetValid = CanPlaceIgnoringSelf(draggingItem, currentTargetcell);
+        currentTargetValid = grid.CanPlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y, draggingItem);
         ghost.SetValid(currentTargetValid);
     }
     public void EndDrag()
@@ -56,7 +53,7 @@ public class InvDragController
 
         if (currentTargetValid)
         {
-            grid.RemoveItemAt(draggingItem.origin);
+            grid.RemoveItem(draggingItem);
             grid.PlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y);
         }
         ghost.hide();

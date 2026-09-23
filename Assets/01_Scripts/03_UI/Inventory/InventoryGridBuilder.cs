@@ -6,6 +6,7 @@ public class InventoryGridBuilder
     {
         int rows = Mathf.CeilToInt((float)totalSlot / columns);
         var grid = new InventoryGrid(columns,rows);
+        grid.SetTotalSlot(totalSlot);
 
         int totalCells = columns * rows;
         for (int i = totalSlot; i < totalCells; i++)

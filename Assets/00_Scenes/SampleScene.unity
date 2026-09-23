@@ -574,7 +574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d46370bbc722f428badffd4ca312547e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIManagement
-  stopDistance: 0
+  stopDistance: 2
   perception: {fileID: 309399856}
   mover: {fileID: 309399857}
 --- !u!136 &309399859
@@ -774,7 +774,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
---- !u!1001 &358788541
+--- !u!1001 &358296666
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -784,15 +784,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3188556125343233488, guid: 8ed6831a02258438894ffeea1b5fd577, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -35303.89
+      value: -35303.363
       objectReference: {fileID: 0}
     - target: {fileID: 3188556125343233488, guid: 8ed6831a02258438894ffeea1b5fd577, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4999995
+      value: 0.5000003
       objectReference: {fileID: 0}
     - target: {fileID: 3188556125343233488, guid: 8ed6831a02258438894ffeea1b5fd577, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 23899.69
+      value: 23899.303
       objectReference: {fileID: 0}
     - target: {fileID: 3188556125343233488, guid: 8ed6831a02258438894ffeea1b5fd577, type: 3}
       propertyPath: m_LocalRotation.w
@@ -829,7 +829,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4137167741651070311, guid: 8ed6831a02258438894ffeea1b5fd577, type: 3}
+      insertIndex: 4
+      addedObject: {fileID: 1342961317}
   m_SourcePrefab: {fileID: 100100000, guid: 8ed6831a02258438894ffeea1b5fd577, type: 3}
 --- !u!1 &410087039
 GameObject:
@@ -1406,6 +1409,7 @@ GameObject:
   - component: {fileID: 789070161}
   - component: {fileID: 789070160}
   - component: {fileID: 789070159}
+  - component: {fileID: 789070162}
   - component: {fileID: 789070158}
   m_Layer: 3
   m_Name: Door
@@ -1441,6 +1445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55abcd12f12424a709a854f30cfea746, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractiveObject
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!65 &789070159
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1519,6 +1524,33 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 789070156}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &789070162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789070156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2023650874
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &791939894
 GameObject:
   m_ObjectHideFlags: 0
@@ -2174,6 +2206,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1301215054}
   m_CullTransparentMesh: 1
+--- !u!1 &1342961311 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4137167741651070311, guid: 8ed6831a02258438894ffeea1b5fd577, type: 3}
+  m_PrefabInstance: {fileID: 358296666}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1342961317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342961311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 4010272663
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1373662509
 GameObject:
   m_ObjectHideFlags: 0
@@ -3365,4 +3429,4 @@ SceneRoots:
   - {fileID: 199858987}
   - {fileID: 309399862}
   - {fileID: 242906932}
-  - {fileID: 358788541}
+  - {fileID: 358296666}

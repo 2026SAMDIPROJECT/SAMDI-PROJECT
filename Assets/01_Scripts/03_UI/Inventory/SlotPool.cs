@@ -1,39 +1,41 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool; // 오브젝트 풀링을 쉽게 사용 가능한 모듈 추가
 // 오브젝트 폴링 전달
 public class SlotPool
 {
-    private readonly List<InventorySlotUI> pool = new List<InventorySlotUI>();
-    private readonly List<InventorySlotUI> active = new List<InventorySlotUI>();
+    private readonly IObjectPool<InventorySlotUI> pool;
+    // private readonly List<InventorySlotUI> active = new List<InventorySlotUI>();
     private readonly InventorySlotUI prefab;
     private readonly Transform container;
 
-    public SlotPool(InventorySlotUI prefab, Transform container)
+    private readonly List<InventorySlotUI> activeList = new List<InventorySlotUI>();
+
+    public SlotPool(InventorySlotUI prefab, Transform container, int defaultCapacity = 0, int maxSize = 100)
     {
         this.prefab = prefab;
         this.container = container;
-    }
 
-    public InventorySlotUI Get()
-    {
-        for (int i = 0; i < pool.Count; i++)
-        {
-            if (!pool[i].gameObject.activeSelf)
+        pool = new ObjectPool<InventorySlotUI>(
+            createFunc: () => Object.Instantiate(this.prefab, this.container),
+            actionOnGet: slot =>
             {
-                pool[i].gameObject.SetActive(true);
-                active.Add(pool[i]);
-                return pool[i];
-            }
-        }
-        InventorySlotUI newSlot = Object.Instantiate(prefab, container);
-        pool.Add(newSlot);
-        active.Add(newSlot);
-        return newSlot;
+                slot.gameObject.SetActive(true);
+                if (!activeList.Contains(slot))
+                    activeList.Add(slot);
+            },
+            actionOnRelease: slot => slot.gameObject.SetActive(false),
+            actionOnDestroy: slot => Object.Destroy(slot.gameObject),
+            collectionCheck: true,
+            defaultCapacity: defaultCapacity,
+            maxSize: maxSize
+        );
     }
+    public InventorySlotUI Get() => pool.Get();
     public void ReleaseAll()
     {
-        foreach (var slot in active) 
-            slot.gameObject.SetActive(false);
-        active.Clear();
+        for (int i = 0; i < activeList.Count; i++)
+            pool.Release(activeList[i]);
+        activeList.Clear();
     }
 }

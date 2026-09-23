@@ -13,7 +13,6 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
     {
         Cell = cell;
         this.grid = grid;
-        ClearSlot();
         SetInteractable(isRealSlot);
     }
     public void SetInteractable(bool interactable)
@@ -43,8 +42,13 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (grid.TryGetItemAt(Cell, out InventoryGrid.PlacedItemInfo info))
+        // if (grid.TryGetItemAt(Cell, out PlacedItemInfo info))
+        //     Debug.Log($"클릭한 아이템 : {info.item.name}");
+        var info = grid.GetItemAt(Cell.x, Cell.y);
+        if (info != null)
+        {
             Debug.Log($"클릭한 아이템 : {info.item.name}");
+        }
     }
     public void OnDrop(PointerEventData eventData)
     {
