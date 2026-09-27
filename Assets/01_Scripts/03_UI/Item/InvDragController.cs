@@ -47,16 +47,19 @@ public class InvDragController
         currentTargetValid = grid.CanPlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y, draggingItem);
         ghost.SetValid(currentTargetValid);
     }
-    public void EndDrag()
+    public bool EndDrag()
     {
-        if(draggingItem == null) return;
+        if(draggingItem == null) return false;
 
-        if (currentTargetValid)
+        bool success = currentTargetValid;
+
+        if (success)
         {
             grid.RemoveItem(draggingItem);
             grid.PlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y);
         }
         ghost.hide();
         draggingItem = null;
+        return success;
     }
 }

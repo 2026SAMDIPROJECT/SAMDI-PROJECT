@@ -59,7 +59,11 @@ public class ItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     }
     public void OnEndDrag(PointerEventData eventData)
     {
-        dragController.EndDrag();
+        bool success = dragController.EndDrag();
+        if (!success)
+        {
+            itemIcon.enabled = ItemInfo.item != null && ItemInfo.item.itemIcon != null;
+        }
     }
     private void OnDisable()
     {
