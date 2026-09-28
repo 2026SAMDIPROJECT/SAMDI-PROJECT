@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
+    [SerializeField] private Image backGroundImage;
+    [SerializeField] private Color normalColor = new Color(1,1,1,0);
+    [SerializeField] private Color highlightColor = new Color(0.5f,0.5f,0.5f,0.8f);
     [SerializeField] private Image itemIcon;
     [SerializeField] private CanvasGroup canvasGroup;
     public Vector2Int Cell {get; private set;}
@@ -21,6 +24,11 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
         canvasGroup.interactable = interactable;
         canvasGroup.blocksRaycasts = interactable;
         canvasGroup.alpha = interactable ? 1f : 0f;
+    }
+    public void SetHighlight(bool isHighlight)
+    {
+        if (backGroundImage == null) return;
+        backGroundImage.color = isHighlight ? highlightColor : normalColor;
     }
     public void UpdateSlot(Sprite icon)
     {
@@ -42,8 +50,6 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // if (grid.TryGetItemAt(Cell, out PlacedItemInfo info))
-        //     Debug.Log($"클릭한 아이템 : {info.item.name}");
         var info = grid.GetItemAt(Cell.x, Cell.y);
         if (info != null)
         {

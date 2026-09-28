@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,19 +19,11 @@ public class InventoryUI : MonoBehaviour
     private GridLayoutGroup gridLayoutGroup;
     private ItemLayerRenderer itemLayerRenderer;
     private InvDragController dragController;
+    private readonly Dictionary<Vector2Int, InventorySlotUI> slotLookup = new Dictionary<Vector2Int, InventorySlotUI>();
+    private SlotHighlighter highlighter;
 
     private void Awake()
     {
-        // ConnectGridLayout();
-
-        // grid = InventoryGridBuilder.Build(totalSlot, columns);
-        // slotPool = new SlotPool(slotPrefab, gridContainer);
-        // var layoutGroup = gridContainer.GetComponent<GridLayoutGroup>();
-        
-        // dragController = new InvDragController(grid, dragGhost, gridContainer.GetComponent<RectTransform>(), canvas.worldCamera, layoutGroup.cellSize, layoutGroup.spacing);
-        // itemLayerRenderer = new ItemLayerRenderer (grid, itemLayer, itemPrefab, layoutGroup.cellSize, layoutGroup.spacing, dragController);
-
-        // // GenerateSlot();
         // UI 초기화만 진행하도록 변경
         if (slotPool == null && slotPrefab != null && gridContainer != null)
         {
@@ -40,10 +34,6 @@ public class InventoryUI : MonoBehaviour
     {
         itemLayerRenderer?.Dispose();
     }
-    // private void OnValidate()
-    // {
-    //     ConnectGridLayout(grid.Width);
-    // }
     private void ConnectGridLayout(int columnCount)
     {
         if (gridContainer == null) return;
@@ -58,13 +48,16 @@ public class InventoryUI : MonoBehaviour
     {
         itemLayerRenderer?.Dispose();
         
-        this.grid = targetGrid;
+        grid = targetGrid;
 
         if (slotPool == null)
         {
             slotPool = new SlotPool(slotPrefab, gridContainer);
         }
         ConnectGridLayout(grid.Width);
+
+        GenerateSlot();
+        highlighter = new SlotHighlighter(grid,slotLookup);
         
         var layoutGroup = gridContainer.GetComponent<GridLayoutGroup>();
         dragController = new InvDragController(
@@ -73,11 +66,12 @@ public class InventoryUI : MonoBehaviour
             gridContainer.GetComponent<RectTransform>(),
             canvas.worldCamera,
             layoutGroup.cellSize,
-            layoutGroup.spacing
+            layoutGroup.spacing,
+            highlighter
         );
         itemLayerRenderer = new ItemLayerRenderer(grid,itemLayer,itemPrefab,layoutGroup.cellSize,layoutGroup.spacing,dragController);
 
-        GenerateSlot();
+        // GenerateSlot();
     }
     public bool AddItem(ItemData item)
     {
@@ -96,6 +90,7 @@ public class InventoryUI : MonoBehaviour
     public void GenerateSlot()
     {
         slotPool?.ReleaseAll();
+        slotLookup.Clear();
 
         int totalCells = grid.Width * grid.Height;
         Debug.Log($"totalCells = {totalCells}");
@@ -107,6 +102,7 @@ public class InventoryUI : MonoBehaviour
             bool isRealSlot = i < grid.TotalSlot;
 
             slotUI.Init(cell, grid, isRealSlot);
+            slotLookup[cell] = slotUI;
         }
     }
 }

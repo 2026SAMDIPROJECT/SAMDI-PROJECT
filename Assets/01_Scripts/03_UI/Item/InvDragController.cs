@@ -8,12 +8,13 @@ public class InvDragController
     private readonly Camera uiCamera;
     private readonly Vector2 cellSize;
     private readonly Vector2 spacing;
+    private readonly SlotHighlighter highlighter;
 
     private PlacedItemInfo draggingItem;
     private Vector2Int currentTargetcell;
     private bool currentTargetValid;
 
-    public InvDragController(InventoryGrid grid, DragGhost ghost, RectTransform gridContainer, Camera uiCamera, Vector2 cellSize, Vector2 spacing)
+    public InvDragController(InventoryGrid grid, DragGhost ghost, RectTransform gridContainer, Camera uiCamera, Vector2 cellSize, Vector2 spacing, SlotHighlighter highlighter)
     {
         this.grid = grid;
         this.ghost = ghost;
@@ -21,6 +22,7 @@ public class InvDragController
         this.uiCamera = uiCamera;
         this.cellSize = cellSize;
         this.spacing = spacing;
+        this.highlighter = highlighter;
     }
     private Vector2 CalcSize(ItemData item)
     {
@@ -46,6 +48,8 @@ public class InvDragController
         // 자기 자신이 있었던 칸은 비운 상태로 가정하고 검사해야하므로, 제자리 이동도 유효하게 판단되도록 처리
         currentTargetValid = grid.CanPlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y, draggingItem);
         ghost.SetValid(currentTargetValid);
+
+        highlighter.UpdateHighlight(draggingItem.item, currentTargetcell); // 매 프레임마다 하이라이트를 갱신하게 함
     }
     public bool EndDrag()
     {
@@ -59,6 +63,7 @@ public class InvDragController
             grid.PlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y);
         }
         ghost.hide();
+        highlighter.ClearHighlight();
         draggingItem = null;
         return success;
     }

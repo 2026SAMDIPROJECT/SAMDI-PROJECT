@@ -241,6 +241,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c82c2a6f5115d49cb9355a239b15a41b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
+  backGroundImage: {fileID: 6306941447610507727}
+  normalColor: {r: 1, g: 1, b: 1, a: 0}
+  highlightColor: {r: 0, g: 0, b: 0, a: 1}
   itemIcon: {fileID: 7919323314883398018}
   canvasGroup: {fileID: 2851539171396053193}
 --- !u!225 &2851539171396053193
