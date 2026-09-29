@@ -17,6 +17,7 @@ public class PlayerInteract : NetworkBehaviour
     private bool isInteract;
     private Timer holdTime = new Timer();
     private InteractiveObject interactTarget;
+    public InventoryUI inventoryUI {get; private set;} // 추가: 외부에서 읽을 프로퍼티 추가
 
     public override void OnNetworkSpawn()
     {
@@ -88,7 +89,7 @@ public class PlayerInteract : NetworkBehaviour
 
         if(callback.performed)
         {
-            interactTarget.Interact();
+            interactTarget.Interact(this); // 추가: this로 전달
         }
 
         if(callback.canceled)
