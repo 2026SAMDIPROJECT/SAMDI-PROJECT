@@ -4,39 +4,27 @@ using UnityEngine;
 public class ItemPickup : InteractiveObject
 {
     [SerializeField] private ItemData itemData;
-    public override void Interact(PlayerInteract interactor)
+    [SerializeField] private float maxDis;
+    public override void Interact(NetworkBehaviourReference inventoryHolderRef)
     {
-        if (!interactor.IsOwner) return;
         if (!IsSpawned) return;
-        RequestPickUpServerRpc(interactor.OwnerClientId);
+        PickupItemRpc(inventoryHolderRef);
     }
-    [Rpc(SendTo.Server)]
-    private void RequestPickUpServerRpc(ulong requesterClientId)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void PickupItemRpc(NetworkBehaviourReference inventoryHolderRef, RpcParams rpcParam = default)
     {
-        // 서버에서 아이템 줍는 것을 검증함
-        if(!NetworkManager.Singleton.ConnectedClients.TryGetValue(requesterClientId, out var client)) return;
-        
-        var playerObj = client.PlayerObject;
-        if (!playerObj.TryGetComponent(out PlayerInventoryHolder inventoryHolder)) return;
+        if(!IsSpawned) return;
+        if(!inventoryHolderRef.TryGet(out PlayerInventoryHolder inventoryHolder)) return;
+
+        if(inventoryHolder.OwnerClientId != rpcParam.Receive.SenderClientId) return;
 
         var grid = inventoryHolder.ServerInventory;
-        if (grid == null) return;
-        if (grid.FindEmptySpace(itemData, out int x, out int y))
-        {
-           bool added = grid.PlaceItem(itemData, x, y);
-           if(added)
-            {
-                if (TryGetComponent(out NetworkObject netObj) && netObj.IsSpawned)
-                {
-                    DisableItemClientRpc();
-                    netObj.Despawn(false);
-                }
-            }
-        }
-    }
-    [Rpc(SendTo.ClientsAndHost)]
-    private void DisableItemClientRpc()
-    {
-        gameObject.SetActive(false);
+        if(grid == null) return;
+
+        if(!grid.FindEmptySpace(itemData, out int x, out int y)) return;
+
+        if(!grid.PlaceItem(itemData, x, y)) return;
+
+        NetworkObject.Despawn(true); // 위에서 spawned를 체크함 -> 여기선 체크 안 함
     }
 }

@@ -12,6 +12,7 @@ public class PlayerInteract : NetworkBehaviour
     [SerializeField] private float interval;
     [SerializeField] private float distance;
     [SerializeField] Camera cam;
+    [SerializeField] private PlayerInventoryHolder inventoryholder;
     private float holdDuration;
     private bool ishold;
     private bool isInteract;
@@ -48,29 +49,22 @@ public class PlayerInteract : NetworkBehaviour
         if(ishold && isInteract)
         {
             holdTime.RunTimer(); // 타이머 실행
-            interactionFill.fillAmount = holdTime.progress; // 타이머 진행도 프로퍼티 사용해 백분율 구함
+            if(interactionFill != null) interactionFill.fillAmount = holdTime.progress; // 타이머 진행도 프로퍼티 사용해 백분율 구함
         }
         Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-        RaycastHit hit;
 
-        if(Physics.Raycast(ray, out hit, distance, interactionLayer))
+        if(Physics.Raycast(ray, out RaycastHit hit, distance, interactionLayer) && hit.collider.TryGetComponent(out InteractiveObject obj)) // 콜라이더에 함수를 넣을 순 없으니까 GetComponent
         {
-            if(hit.collider.TryGetComponent(out InteractiveObject obj)) // 콜라이더에 함수를 넣을 순 없으니까 GetComponent
-            {
-                interactionUI.gameObject.SetActive(true);
-                isInteract = true;
-                interactTarget = obj;
-            }
-            else
-            {
-                Debug.Log("the obj not has interactiveobj");
-            }
+            interactionUI.gameObject.SetActive(true);
+            isInteract = true;
+            interactTarget = obj;
         }
         else
         {
             interactionUI.gameObject.SetActive(false);
             holdTime.EndTimer();
             isInteract = false;
+            interactTarget = null;
         }
     }
 
@@ -89,14 +83,16 @@ public class PlayerInteract : NetworkBehaviour
 
         if(callback.performed)
         {
-            interactTarget.Interact(this); // 추가: this로 전달
+            if (!IsOwner) return;
+            interactTarget.Interact(inventoryholder);
         }
 
         if(callback.canceled)
         {
             holdTime.EndTimer();
-            interactionFill.fillAmount = 0f;
+            if(interactionFill != null) interactionFill.fillAmount = 0f;
             ishold = false;
+            return;
         }
     }
 }
