@@ -7,12 +7,11 @@ using UnityEngine.UI;
 public class PlayerInteract : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactionLayer;
-    [SerializeField] private Image interactionUI;
-    [SerializeField] private Image interactionFill;
+    private Image interactionUI;
+    private Image interactionFill;
     [SerializeField] private float interval;
     [SerializeField] private float distance;
     [SerializeField] Camera cam;
-    [SerializeField] private PlayerInput playerInput;
     private float holdDuration;
     private bool ishold;
     private bool isInteract;
@@ -22,20 +21,30 @@ public class PlayerInteract : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if(!IsOwner)
-        {
-            if(playerInput != null)
-                playerInput.enabled = false;
-        }
+        if(!IsOwner) return;
+
+        if(InputManager.Instance != null)
+            InputManager.Instance.InteractEvent += HandleInteract;
         else
-        { // 이미 다른 컴포넌트에서 맴을 비활성화 / 활성화함
-            if(playerInput != null)
-                playerInput.enabled = true;
+            Debug.LogWarning("InputManager.Instance가 null입니다. 씬에 InputManager가 있는지 확인하세요.");
+            
+        if(UIManager.instance != null)
+        {
+            interactionUI = UIManager.instance.interactImg;
+            interactionFill = UIManager.instance.fillImg;
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if(!IsOwner) return;
+        if(InputManager.Instance != null)
+            InputManager.Instance.InteractEvent -= HandleInteract;
     }
 
     private void Update()
     {
+        if(!IsOwner) return;
         if(ishold && isInteract)
         {
             holdTime.RunTimer(); // 타이머 실행
@@ -65,8 +74,9 @@ public class PlayerInteract : NetworkBehaviour
         }
     }
 
-    public void OnInteract(InputAction.CallbackContext callback)
+    private void HandleInteract(InputAction.CallbackContext callback)
     {
+        if(interactTarget == null) return;
         if(callback.started)
         {
             if(callback.interaction is HoldInteraction hold)

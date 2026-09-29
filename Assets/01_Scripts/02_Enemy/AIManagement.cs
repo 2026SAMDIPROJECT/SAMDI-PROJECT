@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class AIManagement : MonoBehaviour
+public class AIManagement : NetworkBehaviour
 {
     [SerializeField] private float stopDistance = 3f;
     [SerializeField] private AIPerception perception;

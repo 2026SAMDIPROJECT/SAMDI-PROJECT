@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class AIMover : MonoBehaviour
+public class AIMover : NetworkBehaviour
 {
     [SerializeField]private NavMeshAgent agent;
     public void EnemyMove(Vector3 targetPosition)

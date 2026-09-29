@@ -17,10 +17,12 @@ public class NetworkManagerUI : MonoBehaviour
     [Header("코드 UI")]
     [SerializeField] private TMP_Text hostCode;
     [SerializeField] private TMP_InputField clientCode;
-    [SerializeField] private GameObject loadingBoard;
+    [SerializeField] private LoadingManager loadingManage;
+    [SerializeField] private VivoxManager vivoxManager;
 
     private async void Start()
     {
+        loadingManage.Show();
 
         // 유니티 클라우드 비동기 대기(서비스 초기화, 익명 로그인)
         await UnityServices.InitializeAsync();
@@ -31,8 +33,11 @@ public class NetworkManagerUI : MonoBehaviour
             // 익명 로그인
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             Debug.Log($"익명 로그인 :: {AuthenticationService.Instance.PlayerId}");
-            loadingBoard.SetActive(false);
         }
+
+        await vivoxManager.InitializeVivoxAsync();
+
+        loadingManage.Hide();
 
         // 로그인이 모두 완료 되었을 때 버튼에 리스너 추가(그 전엔 눌러도 반응 없음)
         hostBnt.onClick.AddListener(() => CreateRelayHost());
@@ -49,7 +54,7 @@ public class NetworkManagerUI : MonoBehaviour
     {
         try
         {
-            loadingBoard.SetActive(true);
+            loadingManage.Show();
             // 방 최대 인원 4명(IP, 포트번호, 접속 키 같은게 다 있음)
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
 
@@ -63,8 +68,9 @@ public class NetworkManagerUI : MonoBehaviour
             RelayServerData serverData = AllocationUtils.ToRelayServerData(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(serverData);
 
+            await vivoxManager.JoinChannel(code);
+
             NetworkManager.Singleton.StartHost(); // 호스트 시작
-            loadingBoard.SetActive(false);
             DisableUI();
         }
         catch(RelayServiceException e)
@@ -73,7 +79,7 @@ public class NetworkManagerUI : MonoBehaviour
         }
         finally
         {
-            loadingBoard.SetActive(false); // 어떤 이유에서 끝나든지 로딩창 닫
+            loadingManage.Hide(); // 어떤 이유에서 끝나든지 로딩창 닫
         }
     }
 
@@ -93,6 +99,8 @@ public class NetworkManagerUI : MonoBehaviour
 
             RelayServerData serverData = AllocationUtils.ToRelayServerData(joinAllocation, "dtls"); // 서버 데이터 바꿈
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(serverData); // 이 코드로 서버 찾음
+
+            await vivoxManager.JoinChannel(code);
 
             NetworkManager.Singleton.StartClient(); // 클라이언트 시작
             DisableUI();

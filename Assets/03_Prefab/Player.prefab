@@ -299,7 +299,6 @@ MonoBehaviour:
   rigid: {fileID: 3774019371880232733}
   moveInput: {x: 0, y: 0}
   moveSpeed: 10
-  playerInput: {fileID: 286384858474830655}
   cam: {fileID: 3238737714609023574}
   interactionLayer:
     serializedVersion: 2
@@ -514,12 +513,9 @@ MonoBehaviour:
   interactionLayer:
     serializedVersion: 2
     m_Bits: 8
-  interactionUI: {fileID: 8046750725284830829}
-  interactionFill: {fileID: 430950239664624807}
   interval: 0.15
   distance: 3
   cam: {fileID: 3238737714609023574}
-  playerInput: {fileID: 286384858474830655}
 --- !u!114 &3662207673520251767
 MonoBehaviour:
   m_ObjectHideFlags: 0
