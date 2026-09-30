@@ -8,8 +8,8 @@ public class PlayerInventoryHolder : NetworkBehaviour
     [Header("인벤토리 원본 데이터 설정")] // 이 스크립트 파일에서 인벤토리 데이터를 설정함
     [SerializeField] private int totalSlot = 30;
     [SerializeField] private int columns = 5;
-    [Header("UI 연결")]
-    [SerializeField] private InventoryUI inventoryUI;
+    // [Header("UI 연결")]
+    private InventoryUI inventoryUI;
 
     private void Awake()
     {
@@ -17,8 +17,10 @@ public class PlayerInventoryHolder : NetworkBehaviour
     }
     public override void OnNetworkSpawn()
     {
+        inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
         if(IsOwner && inventoryUI != null)
         {
+            inventoryUI.ConnectUIManager();
             inventoryUI.BindInventory(ServerInventory);
         }
     }
