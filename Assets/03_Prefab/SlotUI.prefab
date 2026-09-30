@@ -243,7 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
   backGroundImage: {fileID: 6306941447610507727}
   normalColor: {r: 1, g: 1, b: 1, a: 0}
-  highlightColor: {r: 0, g: 0, b: 0, a: 1}
+  highlightColor: {r: 1, g: 0.40448415, b: 0, a: 1}
   itemIcon: {fileID: 7919323314883398018}
   canvasGroup: {fileID: 2851539171396053193}
 --- !u!225 &2851539171396053193
@@ -255,6 +255,6 @@ CanvasGroup:
   m_GameObject: {fileID: 6112693003621234062}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
