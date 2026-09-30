@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,16 +10,6 @@ public class ItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public PlacedItemInfo ItemInfo {get; private set;}
     private InvDragController dragController;
-
-
-    private void Awake()
-    {
-
-        rectTransform.pivot = new Vector2(0,1);
-        rectTransform.anchorMin = new Vector2(0,1);
-        rectTransform.anchorMax = new Vector2(0,1);
-    }
-    
     public void Setup(PlacedItemInfo info, Vector2 cellsize, Vector2 spacing, InvDragController dragController)
     {
         ItemInfo = info;

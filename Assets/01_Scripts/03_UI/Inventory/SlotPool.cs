@@ -5,7 +5,6 @@ using UnityEngine.Pool; // 오브젝트 풀링을 쉽게 사용 가능한 모듈
 public class SlotPool
 {
     private readonly IObjectPool<InventorySlotUI> pool;
-    // private readonly List<InventorySlotUI> active = new List<InventorySlotUI>();
     private readonly InventorySlotUI prefab;
     private readonly Transform container;
 
