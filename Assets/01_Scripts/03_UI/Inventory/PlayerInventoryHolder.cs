@@ -8,8 +8,7 @@ public class PlayerInventoryHolder : NetworkBehaviour
     [Header("인벤토리 원본 데이터 설정")] // 이 스크립트 파일에서 인벤토리 데이터를 설정함
     [SerializeField] private int totalSlot = 30;
     [SerializeField] private int columns = 5;
-    // [Header("UI 연결")]
-    private InventoryUI inventoryUI;
+    private InventoryUI inventoryUI; // 이 컴포넌트를 넣는 플레이어가 InventoryUI를 설정할수 없어서 FindAnyObjectByType<>()으로 찾음
 
     private void Awake()
     {
@@ -17,7 +16,7 @@ public class PlayerInventoryHolder : NetworkBehaviour
     }
     public override void OnNetworkSpawn()
     {
-        inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
+        inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include); // 숨겨진 곳에서도 
         if(IsOwner && inventoryUI != null)
         {
             inventoryUI.ConnectUIManager();

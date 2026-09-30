@@ -80,8 +80,6 @@ public class InventoryUI : MonoBehaviour
             highlighter
         );
         itemLayerRenderer = new ItemLayerRenderer(grid,itemLayer,itemPrefab,layoutGroup.cellSize,layoutGroup.spacing,dragController);
-
-        // GenerateSlot();
     }
     public bool AddItem(ItemData item)
     {
