@@ -53,7 +53,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
         var info = grid.GetItemAt(Cell.x, Cell.y);
         if (info != null)
         {
-            Debug.Log($"클릭한 아이템 : {info.item.name}");
+            
         }
     }
     public void OnDrop(PointerEventData eventData)

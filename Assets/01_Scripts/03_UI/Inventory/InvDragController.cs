@@ -10,7 +10,7 @@ public class InvDragController
     private readonly Vector2 spacing;
     private readonly SlotHighlighter highlighter;
 
-    private PlacedItemInfo draggingItem;
+    private PlacedItemInfo? draggingItem; // PlacedItemInfo를 구조체로 선언하여 Nullable타입 추가
     private Vector2Int currentTargetcell;
     private bool currentTargetValid;
 
@@ -46,10 +46,10 @@ public class InvDragController
         currentTargetcell = mouseCell;
         
         // 자기 자신이 있었던 칸은 비운 상태로 가정하고 검사해야하므로, 제자리 이동도 유효하게 판단되도록 처리
-        currentTargetValid = grid.CanPlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y, draggingItem);
+        currentTargetValid = grid.CanPlaceItem(draggingItem.Value.item, currentTargetcell.x, currentTargetcell.y, draggingItem.Value);
         ghost.SetValid(currentTargetValid);
 
-        highlighter.UpdateHighlight(draggingItem.item, currentTargetcell); // 매 프레임마다 하이라이트를 갱신하게 함
+        highlighter.UpdateHighlight(draggingItem.Value.item, currentTargetcell); // 매 프레임마다 하이라이트를 갱신하게 함
     }
     public bool EndDrag()
     {
@@ -59,8 +59,8 @@ public class InvDragController
 
         if (success)
         {
-            grid.RemoveItem(draggingItem);
-            grid.PlaceItem(draggingItem.item, currentTargetcell.x, currentTargetcell.y);
+            grid.RemoveItem(draggingItem.Value);
+            grid.PlaceItem(draggingItem.Value.item, currentTargetcell.x, currentTargetcell.y);
         }
         ghost.hide();
         highlighter.ClearHighlight();

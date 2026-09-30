@@ -1,14 +1,13 @@
 using System;
 using UnityEngine;
-
-public class InventoryGrid
+public class InventoryGrid // PlacedItemInfo를 이용한 연산 일부 수정 및 PlacedItemInfo 타입에 Nullable 추가
 {
     public int Width { get; }
     public int Height { get; }
     public int TotalSlot { get; private set;}
 
     // Dictionary 대신 1차원 Flat 배열로 관리를 더 쉽게함
-    private readonly PlacedItemInfo[] gridArray;
+    private readonly PlacedItemInfo?[] gridArray;
     private readonly bool[] lockedCells;
 
     public event Action<PlacedItemInfo> OnItemPlaced;
@@ -23,7 +22,7 @@ public class InventoryGrid
     {
         Width = width;
         Height = height;
-        gridArray = new PlacedItemInfo[width * height];
+        gridArray = new PlacedItemInfo?[width * height];
         lockedCells = new bool[width * height];
     }
 
@@ -32,7 +31,7 @@ public class InventoryGrid
 
     public bool IsValidCell(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
 
-    public bool CanPlaceItem(ItemData item, int startX, int startY, PlacedItemInfo ignoreInfo = null)
+    public bool CanPlaceItem(ItemData item, int startX, int startY, PlacedItemInfo? ignoreInfo = null)
     {
         if (item == null) return false;
         if (startX < 0 || startY < 0 || startX + item.width > Width || startY + item.height > Height)
@@ -46,8 +45,11 @@ public class InventoryGrid
                 if (lockedCells[idx]) return false;
 
                 var currentInfo = gridArray[idx];
-                if (currentInfo != null && currentInfo != ignoreInfo)
+                if (currentInfo.HasValue)
+                {
+                    if (!ignoreInfo.HasValue || !currentInfo.Value.Equals(ignoreInfo.Value))
                     return false;
+                }
             }
         }
         return true;
@@ -70,30 +72,30 @@ public class InventoryGrid
         return true;
     }
 
-    public bool RemoveItem(PlacedItemInfo info)
+    public bool RemoveItem(PlacedItemInfo? info)
     {
-        if (info == null) return false;
+        if (!info.HasValue) return false;
 
-        var origin = info.origin;
-        var item = info.item;
+        var origin = info.Value.origin;
+        var item = info.Value.item;
 
         for (int y = origin.y; y < origin.y + item.height; y++)
         {
             for (int x = origin.x; x < origin.x + item.width; x++)
             {
                 int idx = ToIndex(x, y);
-                if (gridArray[idx] == info)
+                if (gridArray[idx].HasValue && gridArray[idx].Value.Equals(info.Value))
                 {
                     gridArray[idx] = null;
                 }
             }
         }
 
-        OnItemRemoved?.Invoke(info);
+        OnItemRemoved?.Invoke(info.Value);
         return true;
     }
 
-    public PlacedItemInfo GetItemAt(int x, int y)
+    public PlacedItemInfo? GetItemAt(int x, int y)
     {
         if (!IsValidCell(x, y)) return null;
         return gridArray[ToIndex(x, y)];

@@ -6,7 +6,7 @@ public class InventoryUI : MonoBehaviour
 {
     [Header("인벤토리 UI 연결")]
     [SerializeField] private GameObject inventoryCanvas;
-    [SerializeField] private Transform gridContainer;
+    [SerializeField] private GridLayoutGroup gridContainer;
     [SerializeField] private Transform itemLayer;
     [SerializeField] private InventorySlotUI slotPrefab;
     [SerializeField] private ItemUI itemPrefab;
@@ -26,7 +26,7 @@ public class InventoryUI : MonoBehaviour
         // UI 초기화만 진행하도록 변경
         if (slotPool == null && slotPrefab != null && gridContainer != null)
         {
-            slotPool = new SlotPool(slotPrefab, gridContainer);
+            slotPool = new SlotPool(slotPrefab, gridContainer.transform);
         }
     }
     public void ConnectUIManager()
@@ -62,7 +62,7 @@ public class InventoryUI : MonoBehaviour
 
         if (slotPool == null)
         {
-            slotPool = new SlotPool(slotPrefab, gridContainer);
+            slotPool = new SlotPool(slotPrefab, gridContainer.transform);
         }
         ConnectGridLayout(grid.Width);
 
@@ -73,7 +73,7 @@ public class InventoryUI : MonoBehaviour
         dragController = new InvDragController(
             grid, 
             dragGhost, 
-            gridContainer.GetComponent<RectTransform>(),
+            gridContainer.transform as RectTransform,
             canvas.worldCamera,
             layoutGroup.cellSize,
             layoutGroup.spacing,
@@ -101,7 +101,6 @@ public class InventoryUI : MonoBehaviour
         slotLookup.Clear();
 
         int totalCells = grid.Width * grid.Height;
-        Debug.Log($"totalCells = {totalCells}");
 
         for (int i = 0; i < totalCells; i++)
         {
