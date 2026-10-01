@@ -15,7 +15,7 @@ public class PlayerInventoryHolder : NetworkBehaviour
     }
     private void OnDisable()
     {
-        PlayerEvents.OnPlayerRegistered += HandlePlayerRegistered;
+        PlayerEvents.OnPlayerRegistered -= HandlePlayerRegistered;
     }
     private void HandlePlayerRegistered(Transform player)
     {
