@@ -2835,6 +2835,7 @@ MonoBehaviour:
   ghostImage: {fileID: 1176943530}
   validColor: {r: 1, g: 1, b: 1, a: 0.6}
   invalidColor: {r: 1, g: 0.3, b: 0.3, a: 0.6}
+  rectTransform: {fileID: 1176943529}
 --- !u!1 &1205001712
 GameObject:
   m_ObjectHideFlags: 0
