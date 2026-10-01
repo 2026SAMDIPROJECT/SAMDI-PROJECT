@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 3078941080243829733}
   - component: {fileID: -8750525816131274393}
   - component: {fileID: 3662207673520251767}
+  - component: {fileID: 2248412600912973270}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -323,6 +324,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: PlayerOpenInv, 01_PlayerAsmdef
+        m_MethodName: OnInventory
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2ba6e0ec-9639-4177-bf00-e4cb86eb3216
+    m_ActionName: 'Player/Inventory[/Keyboard/b]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
@@ -393,6 +410,7 @@ MonoBehaviour:
   interval: 0.15
   distance: 3
   cam: {fileID: 3238737714609023574}
+  inventoryholder: {fileID: 2248412600912973270}
 --- !u!114 &3662207673520251767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,6 +424,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerNetWorkInit
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &2248412600912973270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913773628749095425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f69de0ed3623b4f8f9f18b80f4dfdbf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 01_InventoryAsmdef::PlayerInventoryHolder
+  ShowTopMostFoldoutHeaderGroup: 1
+  totalSlot: 30
+  columns: 5
 --- !u!1 &6286766328157476404
 GameObject:
   m_ObjectHideFlags: 0

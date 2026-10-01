@@ -1,13 +1,11 @@
 {
-    "name": "01_PlayerAsmdef",
+    "name": "01_InventoryAsmdef",
     "rootNamespace": "",
     "references": [
-        "GUID:0b80444dd20d3465e9abf8cf49853cff",
+        "GUID:3bd35c3c97b6945b1a3fae97e817e7ec",
         "GUID:1491147abca9d7d4bb7105af628b223e",
-        "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:c88c97f16d0cf44e690cdf2e95ab2711",
-        "GUID:cae69d98de9f24f95ad766446fdf29f5",
-        "GUID:880ad1259737a492d9fd19928d645eb2"
+        "GUID:0b80444dd20d3465e9abf8cf49853cff",
+        "GUID:4d6889ea4f8d545b58769db6b01d7968"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

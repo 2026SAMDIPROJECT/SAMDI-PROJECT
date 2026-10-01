@@ -8,6 +8,7 @@ public partial class UIManager : MonoBehaviour
     public static UIManager instance{ get; private set;}
     public Image interactImg;
     public Image fillImg;
+    public Image invImg;
 
     private void Awake()
     {

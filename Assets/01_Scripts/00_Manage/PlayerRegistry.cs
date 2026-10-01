@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
@@ -7,7 +8,6 @@ public partial class PlayerRegistry : MonoBehaviour
 {
     public static PlayerRegistry Instance {get; private set;}
     private readonly List<Transform> activePlayers = new List<Transform>();
-
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -17,7 +17,10 @@ public partial class PlayerRegistry : MonoBehaviour
     public void Register(Transform playerTransform)
     {
         if (!activePlayers.Contains(playerTransform))
+        {
             activePlayers.Add(playerTransform);
+            PlayerEvents.OnPlayerRegistered?.Invoke(playerTransform);
+        }
     }
     // 플레이어 삭제
     public void Unregister(Transform playerTransform)
