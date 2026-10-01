@@ -15,7 +15,6 @@ public class InventoryUI : MonoBehaviour
     private Image invenImg;
     private SlotPool slotPool;
     private InventoryGrid grid;
-    private GridLayoutGroup gridLayoutGroup;
     private ItemLayerRenderer itemLayerRenderer;
     private InvDragController dragController;
     private readonly Dictionary<Vector2Int, InventorySlotUI> slotLookup = new Dictionary<Vector2Int, InventorySlotUI>();
@@ -48,11 +47,8 @@ public class InventoryUI : MonoBehaviour
     {
         if (gridContainer == null) return;
 
-        gridLayoutGroup = gridContainer.GetComponent<GridLayoutGroup>();
-        if (gridLayoutGroup == null) return;
-
-        gridLayoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        gridLayoutGroup.constraintCount = columnCount;
+        gridContainer.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        gridContainer.constraintCount = columnCount;
     }
     public void BindInventory(InventoryGrid targetGrid)
     {
@@ -69,17 +65,16 @@ public class InventoryUI : MonoBehaviour
         GenerateSlot();
         highlighter = new SlotHighlighter(grid,slotLookup);
         
-        var layoutGroup = gridContainer.GetComponent<GridLayoutGroup>();
         dragController = new InvDragController(
             grid, 
             dragGhost, 
             gridContainer.transform as RectTransform,
             canvas.worldCamera,
-            layoutGroup.cellSize,
-            layoutGroup.spacing,
+            gridContainer.cellSize,
+            gridContainer.spacing,
             highlighter
         );
-        itemLayerRenderer = new ItemLayerRenderer(grid,itemLayer,itemPrefab,layoutGroup.cellSize,layoutGroup.spacing,dragController);
+        itemLayerRenderer = new ItemLayerRenderer(grid,itemLayer,itemPrefab,gridContainer.cellSize,gridContainer.spacing,dragController);
     }
     public bool AddItem(ItemData item)
     {
