@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "DifficultFishing", menuName = "Scriptable Objects/DifficultFishing")]
-public class DifficultFishing : ScriptableObject
+public class DifficultFishingData : ScriptableObject
 {
     [Header("플레이어 그린 바")]
     [Range(0.1f, 0.5f)] public float barSize = 0.15f;
