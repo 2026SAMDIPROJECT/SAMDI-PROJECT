@@ -4,6 +4,7 @@ using UnityEngine;
 public class FishingMinigameLogic
 {
     private readonly DifficultFishingData data;
+    // private readonly float barSize;
 
     public float barBottom {get; private set;}
     public float barSize => data.barSize;
@@ -30,7 +31,7 @@ public class FishingMinigameLogic
         barVelocity += (holding ? data.liftAccel : -data.gravity) * dt;
         barBottom += barVelocity * dt;
 
-        float max = 1f - data.barSize;
+        float max = 1f - barSize;
         if (barBottom <= 0f)
         {
             barBottom = 0f;
@@ -54,7 +55,7 @@ public class FishingMinigameLogic
     }
     private void UpdateProgress(float dt)
     {
-        bool overlap = fishPos >= barBottom && fishPos <= barBottom + data.barSize;
+        bool overlap = fishPos >= barBottom && fishPos <= barBottom + barSize;
         progress += (overlap? data.gainPerSec : -data.lossPerSec) * dt;
         progress = Mathf.Clamp01(progress);
 

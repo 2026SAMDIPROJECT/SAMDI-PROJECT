@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d90c62d907674ed886fdeda726aaeee, type: 3}
   m_Name: TestFishing
   m_EditorClassIdentifier: Assembly-CSharp::DifficultFishingData
-  barSize: 0.15
-  liftAccel: 2
-  gravity: 2
-  bottomBounce: 1
-  fishSmoothTime: 0.5
-  fishMaxSpeed: 2
+  barSize: 0.5
+  liftAccel: 1
+  gravity: 1
+  bottomBounce: 0.5
+  fishSmoothTime: 2
+  fishMaxSpeed: 1
   retargetInterval: {x: 0.4, y: 1.2}
   startFill: 0.2
   gainPerSec: 0.15

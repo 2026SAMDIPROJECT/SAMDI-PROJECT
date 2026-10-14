@@ -8,6 +8,11 @@ public class FishingMinigameView : MonoBehaviour
     [SerializeField] private RectTransform fishIcon;
     [SerializeField] private Slider progressSlider;
 
+    public float barSizeRatio {get; private set;}
+    private void Awake()
+    {
+        barSizeRatio = greenBar.rect.height / track.rect.height;
+    }
     public void Render(FishingMinigameLogic logic)
     {
         float h = track.rect.height;
@@ -16,5 +21,7 @@ public class FishingMinigameView : MonoBehaviour
         greenBar.anchoredPosition = new Vector2(0f, logic.barBottom * h);
         fishIcon.anchoredPosition = new Vector2(0f, logic.fishPos * h);
         progressSlider.value = logic.progress;
+
+        // Debug.Log($"h={h}, barBottom={logic.barBottom*h}, barTop={top}, fish={logic.fishPos*h}");
     }
 }
