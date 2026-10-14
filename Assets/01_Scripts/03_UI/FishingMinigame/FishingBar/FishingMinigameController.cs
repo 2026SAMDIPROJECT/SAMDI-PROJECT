@@ -11,9 +11,9 @@ public class FishingMinigameController : MonoBehaviour
 
     private FishingMinigameLogic logic;
 
-    public void startMinigame(DifficultFishingData data)
+    public void startMinigame(DifficultyData diffData, FishData fishData)
     {
-        logic = new FishingMinigameLogic(data);
+        logic = new FishingMinigameLogic(diffData, fishData);
         logic.OnFinished += HandleFinished;
         canvas.SetActive(true);
     }

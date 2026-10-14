@@ -3,11 +3,12 @@ using UnityEngine;
 
 public class FishingMinigameLogic
 {
-    private readonly DifficultFishingData data;
+    private readonly FishData fishdata;
+    private readonly DifficultyData difData;
     // private readonly float barSize;
 
     public float barBottom {get; private set;}
-    public float barSize => data.barSize;
+    public float barSize => difData.barSize;
     public float fishPos {get; private set;}
     public float progress {get; private set;}
 
@@ -19,23 +20,24 @@ public class FishingMinigameLogic
     private float retargetTimer;
     private bool finished;
 
-    public FishingMinigameLogic(DifficultFishingData data)
+    public FishingMinigameLogic(DifficultyData difData, FishData fishData)
     {
-        this.data = data;
+        this.difData = difData;
+        this.fishdata = fishData;
         fishPos = 0.5f;
         fishTarget = 0.4f;
-        progress = data.startFill;
+        progress = difData.startFill;
     }
     private void UpdateBar(float dt, bool holding)
     {
-        barVelocity += (holding ? data.liftAccel : -data.gravity) * dt;
+        barVelocity += (holding ? difData.liftAccel : -difData.gravity) * dt;
         barBottom += barVelocity * dt;
 
         float max = 1f - barSize;
         if (barBottom <= 0f)
         {
             barBottom = 0f;
-            barVelocity = -barVelocity * data.bottomBounce;
+            barVelocity = -barVelocity * difData.bottomBounce;
         }
         else if (barBottom >= max)
         {
@@ -49,14 +51,14 @@ public class FishingMinigameLogic
         if (retargetTimer <= 0f)
         {
             fishTarget = UnityEngine.Random.value;
-            retargetTimer = UnityEngine.Random.Range(data.retargetInterval.x, data.retargetInterval.y);
+            retargetTimer = UnityEngine.Random.Range(fishdata.retargetInterval.x, fishdata.retargetInterval.y);
         }
-        fishPos = Mathf.SmoothDamp(fishPos, fishTarget, ref fishVelocity, data.fishSmoothTime, data.fishMaxSpeed, dt);
+        fishPos = Mathf.SmoothDamp(fishPos, fishTarget, ref fishVelocity, fishdata.fishSmoothTime, fishdata.fishMaxSpeed, dt);
     }
     private void UpdateProgress(float dt)
     {
         bool overlap = fishPos >= barBottom && fishPos <= barBottom + barSize;
-        progress += (overlap? data.gainPerSec : -data.lossPerSec) * dt;
+        progress += (overlap? difData.gainPerSec : -difData.lossPerSec) * dt;
         progress = Mathf.Clamp01(progress);
 
         if(progress >= 1f) Finish(true);

@@ -12,7 +12,8 @@ public class FishingFlowController : MonoBehaviour
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private FishingMinigameController minigame;
-    [SerializeField] private DifficultFishingData difficult;
+    [SerializeField] private DifficultyData difficult;
+    [SerializeField] private FishData fish;
     [SerializeField] private Vector2 biteDelayRange = new Vector2(2f, 5f);
 
     private readonly FishingScore score = new FishingScore();
@@ -33,13 +34,13 @@ public class FishingFlowController : MonoBehaviour
 
         state = State.Fishing;
         statusText.text = "Cast!";
-        minigame.startMinigame(difficult);  
+        minigame.startMinigame(difficult,fish);  
     }
     
     private void HandleResult(bool success)
     {
-        score.ScoreIncrease(success ? 1 : 0);
-        statusText.text = success ? "Success! +1" : "Fail... +0";
+        score.ScoreIncrease(success ? fish.fishScore : 0);
+        statusText.text = success ? $"Success! +{fish.fishScore}" : "Fail... +0";
         EnterIdle();
     }
 

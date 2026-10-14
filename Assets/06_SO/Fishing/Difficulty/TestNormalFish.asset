@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d90c62d907674ed886fdeda726aaeee, type: 3}
-  m_Name: TestFishing
+  m_Name: TestNormalFish
   m_EditorClassIdentifier: Assembly-CSharp::DifficultFishingData
   barSize: 0.24
   liftAccel: 2
@@ -18,7 +18,9 @@ MonoBehaviour:
   bottomBounce: 0
   fishSmoothTime: 1
   fishMaxSpeed: 2
-  retargetInterval: {x: 0.4, y: 1.2}
+  fishChance: 70
+  fishScore: 1
+  retargetInterval: {x: 1, y: 1.8}
   startFill: 0.4
   gainPerSec: 0.15
   lossPerSec: 0.1
