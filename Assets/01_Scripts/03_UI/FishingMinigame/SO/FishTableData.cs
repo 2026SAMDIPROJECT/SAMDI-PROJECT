@@ -14,7 +14,6 @@ using UnityEngine;
 public class FishTableData : ScriptableObject
 {
     [SerializeField] private List<FishDropEntry> entries = new();
-
     public FishDropEntry GetRandomEntry()
     {
         float totalChance = 0f;

@@ -20,10 +20,10 @@ public class FishingMinigameLogic
     private float retargetTimer;
     private bool finished;
 
-    public FishingMinigameLogic(DifficultyData difData, FishData fishData)
+    public FishingMinigameLogic(DifficultyData difData, FishData fishdata)
     {
         this.difData = difData;
-        this.fishdata = fishData;
+        this.fishdata = fishdata;
         fishPos = 0.5f;
         fishTarget = 0.4f;
         progress = difData.startFill;

@@ -6,14 +6,19 @@ public class FishingMinigameController : MonoBehaviour
 {
     [SerializeField] private GameObject canvas;
     [SerializeField] private FishingMinigameView view;
+    private DifficultyData selectDiffData;
+    private FishData selectFishData;
 
     public event Action<bool> OnResult;
-
     private FishingMinigameLogic logic;
 
     public void startMinigame(DifficultyData diffData, FishData fishData)
     {
-        logic = new FishingMinigameLogic(diffData, fishData);
+        selectDiffData = diffData;
+        selectFishData = fishData;
+
+        logic = new FishingMinigameLogic(selectDiffData, selectFishData);
+        
         logic.OnFinished += HandleFinished;
         canvas.SetActive(true);
     }
