@@ -1293,7 +1293,7 @@ MonoBehaviour:
   statusText: {fileID: 1719936491}
   scoreText: {fileID: 1601036479}
   minigame: {fileID: 1121275790}
-  difficult: {fileID: 11400000, guid: 36400a228d37d4abf8aad14f2c579586, type: 2}
+  fishTable: {fileID: 11400000, guid: 0ce992bf5908e4de395ca53f348617d2, type: 2}
   biteDelayRange: {x: 2, y: 5}
 --- !u!1 &1601036477
 GameObject:
