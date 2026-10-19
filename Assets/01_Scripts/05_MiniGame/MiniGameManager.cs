@@ -11,6 +11,11 @@ public abstract class MiniGameManager : NetworkBehaviour
     private int collectedIndex;
     private readonly HashSet<ulong> pendingClients = new HashSet<ulong>();
 
+    public override void OnNetworkSpawn()
+    {
+        if(IsServer) StartGameRpc();
+    }
+
     [Rpc(SendTo.Everyone)]
     public virtual void StartGameRpc()
     {
