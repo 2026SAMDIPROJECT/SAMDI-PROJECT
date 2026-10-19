@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 [CreateAssetMenu(fileName = "DifficultFishing", menuName = "Scriptable Objects/DifficultFishing")]
 public class DifficultyData : ScriptableObject
 {
@@ -12,4 +13,10 @@ public class DifficultyData : ScriptableObject
     [Range(0f, 1f)] public float startFill = 0.2f;
     public float gainPerSec = 0.15f;
     public float lossPerSec = 0.1f;
+
+    [Header("QTE")]
+    public Vector2 qteInterval = new Vector2(6f, 8f);
+    public float qteTimeLimit = 1.2f;
+    public float qteFailPenalty = 0.2f;
+    public Key[] qteKeys = { Key.W, Key.A, Key.S, Key.D};
 }

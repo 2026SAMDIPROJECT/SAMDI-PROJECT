@@ -64,6 +64,14 @@ public class FishingMinigameLogic
         if(progress >= 1f) Finish(true);
         else if(progress <= 0f) Finish(false);
     }
+    public void AddProgress(float delta)
+    {
+        if (finished) return;
+        progress = Mathf.Clamp01(progress + delta);
+
+        if (progress >= 1f) Finish(true);
+        else if (progress <= 0f) Finish(false);
+    }
     public void Tick(float dt, bool holding)
     {
         if (finished) return;
