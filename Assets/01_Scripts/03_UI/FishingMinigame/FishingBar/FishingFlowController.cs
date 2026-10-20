@@ -12,8 +12,6 @@ public class FishingFlowController : MonoBehaviour
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private FishingMinigameController minigame;
-    // [SerializeField] private DifficultyData difficult;
-    // [SerializeField] private FishData fish;
     [SerializeField] private FishTableData fishTable;
     [SerializeField] private Vector2 biteDelayRange = new Vector2(2f, 5f);
 
@@ -35,12 +33,6 @@ public class FishingFlowController : MonoBehaviour
 
         selectedFish = fishTable.GetRandomEntry();
 
-        Debug.Log(
-            $"선택된 물고기: {selectedFish.fishData.name}, " +
-            $"등급: {selectedFish.fishData.quality}, " +
-            $"설정 점수: {selectedFish.fishData.fishScore}"
-        );
-
         state = State.Fishing;
         statusText.text = $"Cast! quality: {selectedFish.fishData.quality}";
         minigame.startMinigame(
@@ -51,7 +43,6 @@ public class FishingFlowController : MonoBehaviour
     
     private void HandleResult(bool success)
     {
-        Debug.Log($"점수 지급 직전: {selectedFish.fishData.fishScore}");
         score.ScoreIncrease(success ? selectedFish.fishData.fishScore : 0);
         statusText.text = success ? $"Success! +{selectedFish.fishData.fishScore}" : "Fail... +0";
         EnterIdle();

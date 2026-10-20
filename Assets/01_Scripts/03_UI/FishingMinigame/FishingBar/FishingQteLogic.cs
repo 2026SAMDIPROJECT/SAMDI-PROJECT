@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,22 +7,35 @@ public class FishingQteLogic
 {
     public readonly float timeLimit;
     public float timeLeft {get; private set;}
+    public int clearedCount {get; private set;}
+    public event Action<int> OnKeyCleared;
     public event Action<bool> OnFinished;
-    private readonly Key requiredKey;
+    private readonly Key[] requiredKeys;
     private bool finished;
 
-    public FishingQteLogic(Key requiredKey, float timeLimit)
+    public FishingQteLogic(Key[] requiredKeys, float timeLimit)
     {
-        this.requiredKey = requiredKey;
+        this.requiredKeys = requiredKeys;
         this.timeLimit = timeLimit;
         timeLeft = timeLimit;
     }
     public void Tick(float dt, Key? pressed)
     {
         if (finished) return;
-        if (pressed.HasValue)
-        {
-            Finish(pressed.Value == requiredKey);
+        if (pressed.HasValue) {
+            if (pressed.Value != requiredKeys[clearedCount])
+            {
+                Finish(false);
+                return;
+            }
+            clearedCount++;
+            OnKeyCleared?.Invoke(clearedCount);
+            if (clearedCount >= requiredKeys.Length)
+            {
+                Finish(true);
+                return;
+            }
+            timeLeft = timeLimit;
             return;
         }
         timeLeft -= dt;

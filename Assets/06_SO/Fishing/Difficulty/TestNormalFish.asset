@@ -16,11 +16,11 @@ MonoBehaviour:
   liftAccel: 2
   gravity: 3
   bottomBounce: 0
-  fishSmoothTime: 1
-  fishMaxSpeed: 2
-  fishChance: 70
-  fishScore: 1
-  retargetInterval: {x: 1, y: 1.8}
   startFill: 0.4
   gainPerSec: 0.15
   lossPerSec: 0.1
+  qteInterval: {x: 6, y: 8}
+  qteCount: {x: 3, y: 6}
+  qteTimeLimit: 1.2
+  qteFailPenalty: 0.2
+  qteKeys: 250000000f0000002100000012000000i

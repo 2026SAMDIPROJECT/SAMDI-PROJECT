@@ -16,6 +16,7 @@ public class DifficultyData : ScriptableObject
 
     [Header("QTE")]
     public Vector2 qteInterval = new Vector2(6f, 8f);
+    public Vector2Int qteCount = new Vector2Int(3,5);
     public float qteTimeLimit = 1.2f;
     public float qteFailPenalty = 0.2f;
     public Key[] qteKeys = { Key.W, Key.A, Key.S, Key.D};

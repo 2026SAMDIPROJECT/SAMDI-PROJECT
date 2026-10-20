@@ -19,3 +19,8 @@ MonoBehaviour:
   startFill: 0.2
   gainPerSec: 0.18
   lossPerSec: 0.2
+  qteInterval: {x: 6, y: 8}
+  qteCount: {x: 10, y: 15}
+  qteTimeLimit: 1.2
+  qteFailPenalty: 0.2
+  qteKeys: 250000000f0000002100000012000000i

@@ -15,7 +15,6 @@ public class FishingMinigameController : MonoBehaviour
     private FishingQteLogic qte;
     private float nextQteTimer;
 
-
     public void startMinigame(DifficultyData diffData, FishData fishData)
     {
         selectDiffData = diffData;
@@ -55,10 +54,15 @@ public class FishingMinigameController : MonoBehaviour
     }
     private void StartQte()
     {
-        Key key = selectDiffData.qteKeys[UnityEngine.Random.Range(0,selectDiffData.qteKeys.Length)];
-        qte = new FishingQteLogic(key, selectDiffData.qteTimeLimit);
+        int count = UnityEngine.Random.Range(selectDiffData.qteCount.x, selectDiffData.qteCount.y);
+
+        Key[] keys = new Key[count];
+        for(int i = 0; i < count; i++)
+            keys[i] = selectDiffData.qteKeys[UnityEngine.Random.Range(0, selectDiffData.qteKeys.Length)];
+        qte = new FishingQteLogic(keys, selectDiffData.qteTimeLimit);
         qte.OnFinished += HandleQteFinished;
-        qteView.Show(key);
+        qte.OnKeyCleared += HandleQteKeyCleared;
+        qteView.Show(keys, 1);
     }
     private void UpdateQte()
     {
@@ -81,6 +85,7 @@ public class FishingMinigameController : MonoBehaviour
         ScheduledQte();
         logic.AddProgress(success ? 0f : -selectDiffData.qteFailPenalty);
     }
+    private void HandleQteKeyCleared(int clearedCount) => qteView.Refresh(clearedCount);
 
     private void HandleFinished(bool success)
     {
