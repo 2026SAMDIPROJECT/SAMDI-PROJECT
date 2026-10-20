@@ -1,7 +1,18 @@
 {
-	"name": "01_MiniGameAsmdef",
-	"references": [
-		"GUID:1491147abca9d7d4bb7105af628b223e",
-		"GUID:4d6889ea4f8d545b58769db6b01d7968"
-	]
+    "name": "01_MiniGameAsmdef",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:4d6889ea4f8d545b58769db6b01d7968",
+        "GUID:c88c97f16d0cf44e690cdf2e95ab2711"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

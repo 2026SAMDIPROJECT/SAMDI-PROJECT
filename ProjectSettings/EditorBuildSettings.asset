@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00_Scenes/TestMiniGame.unity
     guid: f7fe544fb43174957a7c21894417a6db
+  - enabled: 1
+    path: Assets/00_Scenes/FlowFreeMiniGame.unity
+    guid: df86bf1766df54c20b7566d2070daf08
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
