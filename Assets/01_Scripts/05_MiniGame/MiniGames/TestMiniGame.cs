@@ -3,9 +3,8 @@ using UnityEngine;
 // 테스트용 - MiniGameManager 동작 검증 목적, 실제 미니게임 아님
 public class TestMiniGame : MiniGameManager
 {
-    public override void StartGameRpc()
+    public override void OnStartGame()
     {
-        base.StartGameRpc();
         Invoke(nameof(ReportMyResult), 2f);
     }
 
