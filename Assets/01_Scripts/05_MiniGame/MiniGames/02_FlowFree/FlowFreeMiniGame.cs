@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Pool;
-using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class FlowFreeMiniGame : MiniGameManager
@@ -11,6 +10,7 @@ public class FlowFreeMiniGame : MiniGameManager
     [SerializeField] private Canvas canvas;
     [SerializeField] private float boardSize = 600f;
     private float cellSize;
+    private float numSize;
     private int size;
     private IObjectPool<GameObject> gridCellPool;
     private IObjectPool<FlowFreeUI> uiPool;
@@ -85,6 +85,7 @@ public class FlowFreeMiniGame : MiniGameManager
             gridRect.sizeDelta = new Vector2(boardSize, boardSize); 
 
             cellSize = boardSize / size;
+            numSize = cellSize / 2;
             return true;
         }
         else
@@ -124,8 +125,7 @@ public class FlowFreeMiniGame : MiniGameManager
 
                 int length = rng.Next(minLen, maxLen + 1); // 랜덤들은 맥스를 제외함(int 기준)
 
-                // 걷는 동안 지나간 칸을 occupied에 바로 표시
-                // (자기 경로와 겹치는 것도 이 표시로 막힘)
+                // 걷는 동안 지나간 칸을 occupied에 바로 표시(자기 경로와 겹치는 것도 이 표시로 막힘)
                 var path = new List<Vector2Int> { startPos }; // 지나온 길 리스트
                 occupied[startPos.x, startPos.y] = true; // 시작점 점유
 
@@ -167,7 +167,7 @@ public class FlowFreeMiniGame : MiniGameManager
 
         for(int i = 0; i < starts.Count; i++)
         {
-            grid[starts[i].x, starts[i].y] = i + 1;   // 색 번호는 1부터, 0은 점 없음
+            grid[starts[i].x, starts[i].y] = i + 1;   // 색 번호 내부 지정
             grid[ends[i].x, ends[i].y] = i + 1;
         }
 
@@ -179,7 +179,7 @@ public class FlowFreeMiniGame : MiniGameManager
                 if(cell.transform is RectTransform rt)
                 {
                     rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f); // 앵커를 부모 중앙으로
-                    rt.sizeDelta = new Vector2(cellSize, cellSize);                   // 칸 크기와 간격을 일치시킴
+                    rt.sizeDelta = new Vector2(cellSize, cellSize); // 칸 크기와 간격을 일치시킴
                     rt.anchoredPosition = CellPosition(i, j);
                     activeCells.Add(cell);
                 }
@@ -206,7 +206,8 @@ public class FlowFreeMiniGame : MiniGameManager
 
                 start.isDot = true;
                 start.SetDot(DotState.NON);
-                start.SetColor(selectedCol);
+                start.SetColor(selectedCol, i + 1);
+                start.SetNumSize(numSize);
                 activeDots.Add(start);
             }
 
@@ -221,7 +222,8 @@ public class FlowFreeMiniGame : MiniGameManager
 
                 end.isDot = true;
                 end.SetDot(DotState.NON);
-                end.SetColor(selectedCol);
+                end.SetColor(selectedCol, i + 1);
+                end.SetNumSize(numSize);
                 activeDots.Add(end);
             }
         }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public enum DotState
 {
@@ -26,6 +27,7 @@ public enum LineState
 public class FlowFreeUI : MonoBehaviour
 {
     [SerializeField] private Image image;
+    [SerializeField] private TMP_Text numText;
     [SerializeField] private Sprite[] dotSprite;
     [SerializeField] private Sprite[] lineSprite;
     public bool isDot;
@@ -33,9 +35,15 @@ public class FlowFreeUI : MonoBehaviour
     public LineState lineState;
     
 
-    public void SetColor(Color color)
+    public void SetColor(Color color, int num)
     {
         image.color = color;
+        numText.text = num.ToString();
+    }
+
+    public void SetNumSize(float newSize)
+    {
+        numText.fontSize = newSize;
     }
 
     public void SetDot(DotState state)
@@ -44,7 +52,7 @@ public class FlowFreeUI : MonoBehaviour
         image.sprite = dotSprite[(int)state];
     }
 
-    public void SetLIne(LineState state)
+    public void SetLine(LineState state)
     {
         lineState = state;
         image.sprite = lineSprite[(int)state];
