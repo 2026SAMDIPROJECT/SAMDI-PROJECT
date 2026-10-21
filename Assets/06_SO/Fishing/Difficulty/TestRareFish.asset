@@ -21,6 +21,6 @@ MonoBehaviour:
   lossPerSec: 0.1
   qteInterval: {x: 6, y: 8}
   qteCount: {x: 6, y: 10}
-  qteTimeLimit: 1.2
+  qteTimeLimit: 0.8
   qteFailPenalty: 0.2
   qteKeys: 250000000f0000002100000012000000i

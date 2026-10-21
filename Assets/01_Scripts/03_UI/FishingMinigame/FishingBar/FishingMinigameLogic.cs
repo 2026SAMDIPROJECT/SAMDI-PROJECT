@@ -1,11 +1,10 @@
 using System;
 using UnityEngine;
 
-public class FishingMinigameLogic
+public class FishingMinigameLogic // TODO: 로직 분리하여 Tick에서 처리
 {
     private readonly FishData fishdata;
     private readonly DifficultyData difData;
-    // private readonly float barSize;
 
     public float barBottom {get; private set;}
     public float barSize => difData.barSize;
@@ -53,7 +52,7 @@ public class FishingMinigameLogic
             fishTarget = UnityEngine.Random.value;
             retargetTimer = UnityEngine.Random.Range(fishdata.retargetInterval.x, fishdata.retargetInterval.y);
         }
-        fishPos = Mathf.SmoothDamp(fishPos, fishTarget, ref fishVelocity, fishdata.fishSmoothTime, fishdata.fishMaxSpeed, dt);
+        fishPos = Mathf.SmoothDamp(fishPos,fishTarget, ref fishVelocity, fishdata.fishSmoothTime, fishdata.fishMaxSpeed, dt);
     }
     private void UpdateProgress(float dt)
     {
@@ -64,10 +63,10 @@ public class FishingMinigameLogic
         if(progress >= 1f) Finish(true);
         else if(progress <= 0f) Finish(false);
     }
-    public void AddProgress(float delta)
+    public void AddProgress(float dt)
     {
         if (finished) return;
-        progress = Mathf.Clamp01(progress + delta);
+        progress = Mathf.Clamp01(progress + dt); // 0 ~ 1사이 숫자
 
         if (progress >= 1f) Finish(true);
         else if (progress <= 0f) Finish(false);

@@ -19,7 +19,7 @@ public class FishingQteView : MonoBehaviour
     private int previewCount;
 
     private void Awake() => root.SetActive(false);
-    public void Show(IReadOnlyList<Key> sequence, int preview)
+    public void Show(IReadOnlyList<Key> sequence, int preview) // QTE 키 보여주는 로직 (readonly 배열에서 들고옴)
     {
         keys = sequence;
         previewCount = Mathf.Clamp(preview, 0 , previewColor.Length);
@@ -32,7 +32,7 @@ public class FishingQteView : MonoBehaviour
         timerFill.fillAmount = 1f;
         root.SetActive(true);
     }
-    public void Refresh(int clearedCount)
+    public void Refresh(int clearedCount) // 남은 키 갯수 시각화 및 QTE 키 시각화
     {
         for (int i = 0; i < slots.Count ; i++)
         {

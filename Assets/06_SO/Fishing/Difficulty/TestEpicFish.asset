@@ -16,11 +16,11 @@ MonoBehaviour:
   liftAccel: 2
   gravity: 3
   bottomBounce: 0
-  startFill: 0.2
+  startFill: 0.3
   gainPerSec: 0.18
   lossPerSec: 0.2
   qteInterval: {x: 6, y: 8}
   qteCount: {x: 10, y: 15}
-  qteTimeLimit: 1.2
+  qteTimeLimit: 0.6
   qteFailPenalty: 0.2
   qteKeys: 250000000f0000002100000012000000i

@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68ab8c67845d04f26826347d637615ea, type: 3}
   m_Name: EpicData
   m_EditorClassIdentifier: Assembly-CSharp::FishData
-  fishSmoothTime: 0.25
+  fishSmoothTime: 0.4
   fishMaxSpeed: 2.5
   quality: 2
-  fishScore: 20
-  retargetInterval: {x: 0.4, y: 1}
+  retargetInterval: {x: 0.5, y: 1}
