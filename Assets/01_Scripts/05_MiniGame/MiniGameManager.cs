@@ -11,8 +11,13 @@ public abstract class MiniGameManager : NetworkBehaviour
     private int collectedIndex;
     private readonly HashSet<ulong> pendingClients = new HashSet<ulong>();
 
+    public override void OnNetworkSpawn()
+    {
+        if(IsServer) StartGameRpc();
+    }
+
     [Rpc(SendTo.Everyone)]
-    public virtual void StartGameRpc()
+    public void StartGameRpc()
     {
         if (isRunning) return;
         isRunning = true;
@@ -27,6 +32,13 @@ public abstract class MiniGameManager : NetworkBehaviour
 
             NetworkManager.OnClientDisconnectCallback += HandleClientDisconnected;
         }
+
+        OnStartGame();
+    }
+
+    public virtual void OnStartGame()
+    {
+        
     }
 
     // 레이싱처럼 각자 따로 끝날 때 씀
