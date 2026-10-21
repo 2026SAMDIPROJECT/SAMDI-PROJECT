@@ -1,4 +1,3 @@
-
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -40,7 +39,6 @@ public class FishingFlowController : MonoBehaviour
             selectedFish.fishData
         );  
     }
-    
     private void HandleResult(bool success)
     {
         score.ScoreIncrease(success ? selectedFish.fishData.fishScore : 0);

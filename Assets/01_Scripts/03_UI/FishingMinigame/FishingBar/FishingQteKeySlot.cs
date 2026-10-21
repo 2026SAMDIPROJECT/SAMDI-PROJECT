@@ -2,7 +2,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CanvasGroup))] // 지금 현재는 SerializeField에서 넣고 있긴 한데 지워도 상관없지 않을까
 public class FishingQteKeySlot : MonoBehaviour
 {
     [SerializeField] private TMP_Text keyText;
