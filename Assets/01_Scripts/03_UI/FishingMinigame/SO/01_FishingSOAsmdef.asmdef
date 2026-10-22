@@ -1,5 +1,5 @@
 {
-    "name": "FishingSO",
+    "name": "01_FishingSOAsmdef",
     "rootNamespace": "",
     "references": [
         "Unity.InputSystem"

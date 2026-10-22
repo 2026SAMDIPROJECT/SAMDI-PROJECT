@@ -1,0 +1,16 @@
+{
+    "name": "FishingLogicAsmdef",
+    "rootNamespace": "",
+    "references": [
+        "GUID:20a6fb7df16ce4eb087b7c3a39c3f771"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
