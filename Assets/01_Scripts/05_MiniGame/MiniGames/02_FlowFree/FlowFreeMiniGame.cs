@@ -4,9 +4,24 @@ using System.Collections.Generic;
 
 public class FlowFreeMiniGame : MiniGameManager
 {
+    private class FlowPath
+    {
+        public readonly List<Vector2Int> cells = new List<Vector2Int>();
+        public List<FlowFreeUI> activeLines = new List<FlowFreeUI>();
+        public Vector2Int start;
+        public bool complete = false;
+        public Color color;
+
+        public void Reset()
+        {
+            cells.Clear();
+            complete = false;
+        }
+    }
     [SerializeField] private Transform gridBoard;
     [SerializeField] private GameObject gridCell;
     [SerializeField] private FlowFreeUI uiPrefab;
+    [SerializeField] private FlowFreeInput input;
     [SerializeField] private Canvas canvas;
     [SerializeField] private float boardSize = 600f;
     private float cellSize;
@@ -15,14 +30,20 @@ public class FlowFreeMiniGame : MiniGameManager
     private IObjectPool<GameObject> gridCellPool;
     private IObjectPool<FlowFreeUI> uiPool;
     private int[,] grid;
+    private int[,] lineGrid;
     private bool[,] occupied;
+    private FlowFreeUI[,] dotUI;
     private int score;
     private float fillRatio = 0.6f;
     private List<Vector2Int> starts = new List<Vector2Int>();
     private List<Vector2Int> ends = new List<Vector2Int>();
+    private List<FlowPath> paths = new List<FlowPath>();
     private List<GameObject> activeCells = new List<GameObject>();
     private List<FlowFreeUI> activeDots = new List<FlowFreeUI>();
     private HashSet<Vector3> usedColor = new HashSet<Vector3>();
+    private int selectedNum;
+    private Vector2Int lastCell = Vector2Int.zero;
+    private bool dragging;
 
     private System.Random rng = new System.Random();
 
@@ -52,7 +73,238 @@ public class FlowFreeMiniGame : MiniGameManager
             defaultCapacity: 200,
             maxSize: 1000
         );
+
+        input.Down += OnDown;
+        input.Drag += OnDrag;
+        input.Up += OnUp;
+
+        Cursor.lockState = CursorLockMode.None;
+
         base.OnNetworkSpawn();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        input.Down -= OnDown;
+        input.Drag -= OnDrag;
+        input.Up -= OnUp;
+
+        ClearBoard();
+    }
+
+    private int DirToBit(Vector2Int dir)
+    {
+        if(dir == Vector2Int.up) return 1;
+        if(dir == Vector2Int.right) return 2;
+        if(dir == Vector2Int.down) return 4;
+        return 8; // left
+    }
+
+    private LineState BitToLine(int bit) => bit switch
+    {
+        1 => LineState.UP, // 0b_0001
+        2 => LineState.RIGHT, // 0b_0010
+        4 => LineState.DOWN, // 0b_0100
+        8 => LineState.LEFT, // 0b_1000
+        5 => LineState.UP_DOWN, // 0b_0101, UP | DOWN
+        10 => LineState.LEFT_RIGHT, // 0b_1010, RIGHT | LEFT
+        3 => LineState.UP_RIGHT, // 0b_0011, UP | RIGHT
+        9 => LineState.UP_LEFT, // 0b_1001, UP | LEFT
+        6 => LineState.DOWN_RIGHT, // 0b_0110, DOWN | RIGHT
+        12 => LineState.DOWN_LEFT, // 0b_1100, DOWN | LEFT
+        _ => LineState.NON
+    };
+
+    private DotState BitToDot(int bit) => bit switch
+    {
+        1 => DotState.UP, // 0b_0001
+        2 => DotState.RIGHT, // 0b_0010
+        4 => DotState.DOWN, // 0b_0100
+        8 => DotState.LEFT, // 0b_1000
+        _ => DotState.NON
+    };
+
+    private int DirBit(FlowPath path, int i)
+    {
+        int bit = 0;
+        if(i > 0) bit |= DirToBit(path.cells[i - 1] - path.cells[i]); // (이전 칸 - 현재 칸)으로 방향 구해서 파라미터로 줌
+        if(i < path.cells.Count - 1) bit |= DirToBit(path.cells[i + 1] - path.cells[i]);
+        return bit;
+    }
+
+    private void OnDown(Vector2 pos)
+    {
+        Debug.Log("down");
+        if(TryGetCell(pos, out var cellPos)) BeginDrag(cellPos);
+    }
+
+    private void OnDrag(Vector2 pos)
+    {
+        Debug.Log("drag");
+        if(TryGetCell(pos, out var cellPos)) UpdateDrag(cellPos);
+    }
+
+    private void OnUp() => EndDrag();
+
+    private bool TryGetCell(Vector2 mousePos, out Vector2Int cellPos)
+    {
+        int cellX = Mathf.FloorToInt(mousePos.x / cellSize + size * 0.5f);
+        int cellY = Mathf.FloorToInt(mousePos.y / cellSize + size * 0.5f);
+        cellPos = new Vector2Int(cellX, cellY);
+
+        return cellX >= 0 && cellY >= 0 && cellX < size && cellY < size;
+    }
+
+    private void BeginDrag(Vector2Int cellPos)
+    {
+        if(grid == null) return;
+        dragging = true;
+        int cellNum = grid[cellPos.x, cellPos.y];
+
+        if(cellNum != 0)
+        {
+            CutPath(cellNum, 0);
+            paths[cellNum - 1].cells.Add(cellPos);
+            paths[cellNum - 1].start = cellPos;
+            paths[cellNum - 1].activeLines.Add(null);
+            lineGrid[cellPos.x, cellPos.y] = cellNum;
+        }
+        else
+        {
+            cellNum = lineGrid[cellPos.x, cellPos.y];
+            if(cellNum == 0) return;
+            CutPath(cellNum, paths[cellNum - 1].cells.IndexOf(cellPos) + 1);
+        }
+
+        selectedNum = cellNum;
+        lastCell = cellPos;
+    }
+
+    private void UpdateDrag(Vector2Int cellPos)
+    {
+        while(selectedNum != 0 && lastCell != cellPos) // 반복문은 포인터 점프 때문
+        {
+            var dis = cellPos - lastCell;
+            var step = Mathf.Abs(dis.x) >= Mathf.Abs(dis.y)
+            ? new Vector2Int((int)Mathf.Sign(dis.x), 0)
+            : new Vector2Int(0, (int)Mathf.Sign(dis.y));
+
+            var next = lastCell + step;
+            if(!TryEnter(next)) break; // 실패 시 멈춤
+            lastCell = next;
+        }
+    }
+
+    private void RefreshShape(FlowPath path, int i)
+    {
+        if(i < 0 || i >= path.cells.Count) return;
+        var ui = path.activeLines[i];
+        if(ui == null) 
+        {
+            RefreshDot(path, i);
+            return;                                   // 점 칸은 조각이 없음
+        }
+
+        ui.SetLine(BitToLine(DirBit(path, i)));
+    }
+
+    private void RefreshDot(FlowPath path, int i)
+    {
+        var dotPos = path.cells[i];
+        var dot = dotUI[dotPos.x, dotPos.y];
+
+        if(dot == null) return;
+        dot.SetDot(BitToDot(DirBit(path, i)));
+    }
+
+    private void ResetDot(Vector2Int pos)
+    {
+        var ui = dotUI[pos.x, pos.y];
+        if(ui != null) ui.SetDot(DotState.NON);
+    }
+
+    private void EndDrag()
+    {
+        if(!dragging) return;
+        dragging = false;
+        selectedNum = 0;
+        foreach(var path in paths)
+            if(!path.complete) return;
+        
+        Debug.Log("Complete puzzle!");
+    }
+
+    private void CutPath(int selected, int keep)
+    {
+        var path = paths[selected - 1];
+
+        for(int i = path.cells.Count - 1; i >= keep; i--) // count - 1인건 인덱스 때문
+        {
+            var cell = path.cells[i];
+            lineGrid[cell.x, cell.y] = 0;
+
+            if(path.activeLines[i] != null)
+                uiPool.Release(path.activeLines[i]);
+            else
+                ResetDot(cell);
+
+            path.activeLines.RemoveAt(i);
+            path.cells.RemoveAt(i);
+        }
+
+        path.complete = false; // 끊었으니 실패로 처리
+        if(path.cells.Count > 0)
+            RefreshShape(path, path.cells.Count - 1);
+    }
+
+    private bool TryEnter(Vector2Int cell)
+    {
+        var path = paths[selectedNum - 1];
+
+        int index = path.cells.IndexOf(cell);
+        if(index >= 0)
+        {
+            CutPath(selectedNum, index + 1);
+            return true; // 선 자르고 거기서부터 다시 선 잇기 시작이기에 true로 반환함.
+        }
+
+        int diffNum = grid[cell.x, cell.y];
+        if(diffNum != 0 && diffNum != selectedNum) return false; // 다른 색 점에 드래그 -> 실패
+
+        int diffLine = lineGrid[cell.x, cell.y];
+        if(diffLine != 0 && diffLine != selectedNum) return false; // 다른 색 선에 드래그 -> 실패
+
+        FlowFreeUI line = null;
+        if(diffNum == 0)
+        {
+            line = uiPool.Get();
+            if(line.transform is RectTransform rt)
+            {
+                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = CellPosition(cell.x, cell.y);
+                rt.sizeDelta = new Vector2(cellSize, cellSize);
+            }
+            (line.transform as RectTransform).anchoredPosition = CellPosition(cell.x, cell.y);
+            line.SetColor(path.color);
+
+        }
+        path.cells.Add(cell);
+        path.activeLines.Add(line);
+        lineGrid[cell.x, cell.y] = selectedNum;
+
+        int num = path.cells.Count;
+        RefreshShape(path, num - 1);
+        RefreshShape(path, num - 2);
+
+        if(diffNum == selectedNum && path.start != cell)
+        {
+            path.complete = true;
+            selectedNum = 0;
+        }
+
+        return true; // 기본 성공
     }
 
     public override void OnStartGame()
@@ -65,14 +317,9 @@ public class FlowFreeMiniGame : MiniGameManager
             return;
         }
 
-        Generate(3);
+        Generate(5);
     }
 
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
-        ClearBoard();
-    }
 
     private bool SetupSize(int newSize)
     {
@@ -91,7 +338,7 @@ public class FlowFreeMiniGame : MiniGameManager
         else
         {
             Debug.LogError("Error :: gridBoard가 RectTransform이 아님");
-            return true;
+            return false;
         }
     }
 
@@ -108,6 +355,8 @@ public class FlowFreeMiniGame : MiniGameManager
 
         grid = new int[size, size];
         occupied = new bool[size, size];
+        lineGrid = new int[size, size];
+        dotUI = new FlowFreeUI[size, size];
 
         int maxCount = rng.Next(2, Mathf.FloorToInt(size * size / 2));
         float avg = size * size * fillRatio / maxCount;
@@ -196,7 +445,7 @@ public class FlowFreeMiniGame : MiniGameManager
         {
             FlowFreeUI start = uiPool.Get();
             selectedCol = RandomColor();
-            var startDot = starts[i];
+            Vector2Int startDot = starts[i];
 
             if(start.transform is RectTransform startRt)
             {
@@ -208,11 +457,13 @@ public class FlowFreeMiniGame : MiniGameManager
                 start.SetDot(DotState.NON);
                 start.SetColor(selectedCol, i + 1);
                 start.SetNumSize(numSize);
+
                 activeDots.Add(start);
+                dotUI[startDot.x, startDot.y] = start;
             }
 
             FlowFreeUI end = uiPool.Get();
-            var endDot = ends[i];
+            Vector2Int endDot = ends[i];
 
             if(end.transform is RectTransform endRt)
             {
@@ -224,8 +475,12 @@ public class FlowFreeMiniGame : MiniGameManager
                 end.SetDot(DotState.NON);
                 end.SetColor(selectedCol, i + 1);
                 end.SetNumSize(numSize);
+
                 activeDots.Add(end);
+                dotUI[endDot.x, endDot.y] = end;
             }
+
+            paths.Add(new FlowPath{ color = selectedCol });
         }
     }
 
@@ -248,7 +503,7 @@ public class FlowFreeMiniGame : MiniGameManager
 
             foreach(Vector3 item in usedColor)
             {
-                if(Mathf.Abs(randH - item.x) < minH && Mathf.Abs(randS - item.x) < minS && Mathf.Abs(randV - item.x) < minV)
+                if(Mathf.Abs(randH - item.x) < minH && Mathf.Abs(randS - item.y) < minS && Mathf.Abs(randV - item.z) < minV)
                 {
                     isUnique = false;
                     break;
@@ -276,6 +531,21 @@ public class FlowFreeMiniGame : MiniGameManager
                 uiPool.Release(dot);
         }
         activeDots.Clear();
+
+        foreach(var path in paths)
+        {
+            foreach(var line in path.activeLines)
+            {
+                if(line != null)
+                {
+                    uiPool.Release(line);
+                }
+            }
+        }
+        paths.Clear();
+        usedColor.Clear();
+        starts.Clear();
+        ends.Clear();
     }
 
     private bool IsAdjacent(Vector2Int start, Vector2Int end) => Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y) == 1;

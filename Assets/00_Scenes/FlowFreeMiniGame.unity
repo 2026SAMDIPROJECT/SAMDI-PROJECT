@@ -435,6 +435,7 @@ GameObject:
   - component: {fileID: 2028314345}
   - component: {fileID: 2028314346}
   - component: {fileID: 2028314347}
+  - component: {fileID: 2028314348}
   m_Layer: 0
   m_Name: Root
   m_TagString: Untagged
@@ -503,8 +504,22 @@ MonoBehaviour:
   gridBoard: {fileID: 400655921}
   gridCell: {fileID: 6112693003621234062, guid: c3ddc6bd4eb9d49cca4773483084bee3, type: 3}
   uiPrefab: {fileID: 8287139146852810481, guid: c3a1b493ceb98444aa84162a673dbff4, type: 3}
+  input: {fileID: 2028314348}
   canvas: {fileID: 1307795667}
   boardSize: 600
+--- !u!114 &2028314348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2028314344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85eadf1544d0a4e2d8ab53d0351356da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 01_MiniGameAsmdef::FlowFreeInput
+  rect: {fileID: 400655921}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public enum DotState
 {
@@ -22,7 +23,8 @@ public enum LineState
     UP_LEFT,
     UP_RIGHT,
     DOWN_LEFT,
-    DOWN_RIGHT
+    DOWN_RIGHT,
+    NON
 }
 public class FlowFreeUI : MonoBehaviour
 {
@@ -33,12 +35,22 @@ public class FlowFreeUI : MonoBehaviour
     public bool isDot;
     public DotState dotState;
     public LineState lineState;
-    
+
+    private void OnEnable()
+    {
+        numText.gameObject.SetActive(false);
+    }
 
     public void SetColor(Color color, int num)
     {
         image.color = color;
+        numText.gameObject.SetActive(true);
         numText.text = num.ToString();
+    }
+
+    public void SetColor(Color color)
+    {
+        image.color = color;
     }
 
     public void SetNumSize(float newSize)
