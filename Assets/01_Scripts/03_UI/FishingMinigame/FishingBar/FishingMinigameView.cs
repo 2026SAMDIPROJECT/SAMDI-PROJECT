@@ -6,9 +6,10 @@ public class FishingMinigameView : MonoBehaviour
     [SerializeField] private RectTransform track;
     [SerializeField] private RectTransform greenBar;
     [SerializeField] private RectTransform fishIcon;
+    [SerializeField] private Image fishImage;
     [SerializeField] private Slider progressSlider;
 
-    public float barSizeRatio {get; private set;}
+    public void SetFishColor(Color color) => fishImage.color = color;
     public void Render(FishingMinigameLogic logic)
     {
         float h = track.rect.height; // 트랙 높이

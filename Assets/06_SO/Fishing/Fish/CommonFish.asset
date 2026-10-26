@@ -15,5 +15,5 @@ MonoBehaviour:
   fishSmoothTime: 1
   fishMaxSpeed: 1.4
   quality: 0
-  fishScore: 1
   retargetInterval: {x: 1, y: 1.5}
+  fishIconColor: {r: 0.4198113, g: 1, b: 0.41981134, a: 1}

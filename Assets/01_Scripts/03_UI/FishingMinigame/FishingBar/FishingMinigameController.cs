@@ -20,6 +20,7 @@ public class FishingMinigameController : MonoBehaviour
         selectDiffData = diffData;
         selectFishData = fishData;
 
+        view.SetFishColor(fishData.fishIconColor);
         logic = new FishingMinigameLogic(selectDiffData, selectFishData);
         logic.OnFinished += HandleFinished;
         canvas.SetActive(true);

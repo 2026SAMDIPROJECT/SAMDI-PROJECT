@@ -27,4 +27,5 @@ public class FishData : ScriptableObject
         }
     }
     public Vector2 retargetInterval = new Vector2(0.4f, 1.2f);
+    public Color fishIconColor = Color.white;
 }

@@ -17,6 +17,7 @@ public class FishTableData : ScriptableObject
     public FishDropEntry GetRandomEntry()
     {
         float totalChance = 0f;
+        FishDropEntry last = null;
 
         foreach (var entry in entries) // 확률 전체 모으기
         {
@@ -33,11 +34,12 @@ public class FishTableData : ScriptableObject
             if (entry == null || entry.chance <= 0f) 
                 continue;
             
+            last = entry;
             if (randomValue < entry.chance)
                 return entry;
             
             randomValue -= entry.chance;
         }
-        return null;
+        return last;
     }
 }
