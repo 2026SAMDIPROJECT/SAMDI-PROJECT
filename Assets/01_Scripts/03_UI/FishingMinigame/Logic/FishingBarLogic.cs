@@ -3,15 +3,11 @@ using UnityEngine;
 public class FishingBarLogic
 {
     private readonly DifficultyData difData;
-
     public float barBottom {get; private set;}
     public float barSize => difData.barSize;
-
     private float barVelocity;
 
     public FishingBarLogic(DifficultyData difData) => this.difData = difData;
-
-
     public void UpdateBar(float dt, bool holding)
     {
         barVelocity += (holding ? difData.liftAccel : -difData.gravity) * dt;

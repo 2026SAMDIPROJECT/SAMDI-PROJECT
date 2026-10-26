@@ -1,4 +1,5 @@
 using System;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,6 +15,7 @@ public class FishingMinigameController : MonoBehaviour
     private FishingMinigameLogic logic;
     private FishingQteLogic qte;
     private float nextQteTimer;
+    private float gameSpeed = 1f;
 
     public void startMinigame(DifficultyData diffData, FishData fishData) // 게임 시작 
     {
@@ -25,6 +27,7 @@ public class FishingMinigameController : MonoBehaviour
         logic.OnFinished += HandleFinished;
         canvas.SetActive(true);
         ScheduledQte(); // QTE 스케줄해서 다음 QTE 타이머 돌림 
+        gameSpeed = 1f;
     }
     private void Update()
     {
@@ -33,15 +36,18 @@ public class FishingMinigameController : MonoBehaviour
         if (qte != null)
         {
             UpdateQte(); // QTE 키 배열을 받아서 
-            return;
         }
-        
+        float dt = Time.deltaTime;
+        float target = qte != null ? selectDiffData.qteSlowScale : 1f;
+        gameSpeed = Mathf.MoveTowards(gameSpeed, target, dt / Mathf.Max(0.01f, selectDiffData.speedEaseTime));
+
         bool holding = Mouse.current != null && Mouse.current.leftButton.isPressed;
-        logic.Tick(Time.deltaTime, holding); // 낚시 미니게임 시작
+        logic.Tick(dt * gameSpeed, holding); // 낚시 미니게임 시작
 
         if(logic == null) return;
         view.Render(logic); // 낚시 미니게임 상태 
-        nextQteTimer -= Time.deltaTime; 
+        if (qte != null) return; 
+        nextQteTimer -= dt; 
         if(nextQteTimer <= 0f) StartQte();
     }
     private static Key? ReadPressedKey(Key[] keys) 

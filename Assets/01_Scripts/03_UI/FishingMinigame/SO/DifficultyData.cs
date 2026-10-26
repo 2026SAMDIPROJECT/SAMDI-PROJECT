@@ -17,6 +17,8 @@ public class DifficultyData : ScriptableObject
     [Header("QTE")]
     public Vector2 qteInterval = new Vector2(6f, 8f);
     public Vector2Int qteCount = new Vector2Int(3,5);
+    [Range(0f, 1f)]public float qteSlowScale = 0.1f;
+    public float speedEaseTime = 0.3f; // 속도가 바뀌는데 걸리는 시간
     public float qteTimeLimit = 1.2f;
     public float qteFailPenalty = 0.2f;
     public Key[] qteKeys = { Key.W, Key.A, Key.S, Key.D};
