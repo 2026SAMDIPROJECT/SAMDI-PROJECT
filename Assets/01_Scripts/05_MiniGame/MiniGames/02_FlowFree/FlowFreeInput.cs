@@ -11,11 +11,8 @@ public class FlowFreeInput : MonoBehaviour, IPointerDownHandler, IDragHandler, I
 
     public void OnPointerDown(PointerEventData data)
     {
-        Debug.Log("down_input");
         if(data.button != PointerEventData.InputButton.Left || !LocalPos(data, out var local))
             return;
-
-        Debug.Log("down_left");
         Down?.Invoke(local);
     }
 

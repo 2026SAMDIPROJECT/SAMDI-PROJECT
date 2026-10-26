@@ -136,13 +136,11 @@ public class FlowFreeMiniGame : MiniGameManager
 
     private void OnDown(Vector2 pos)
     {
-        Debug.Log("down");
         if(TryGetCell(pos, out var cellPos)) BeginDrag(cellPos);
     }
 
     private void OnDrag(Vector2 pos)
     {
-        Debug.Log("drag");
         if(TryGetCell(pos, out var cellPos)) UpdateDrag(cellPos);
     }
 
@@ -358,60 +356,106 @@ public class FlowFreeMiniGame : MiniGameManager
         lineGrid = new int[size, size];
         dotUI = new FlowFreeUI[size, size];
 
-        int maxCount = rng.Next(2, Mathf.FloorToInt(size * size / 2));
-        float avg = size * size * fillRatio / maxCount;
+        int maxCount = size * size * 2;                         // 5x5면 색 5개 정도
+        int longCount = Mathf.Max(1, maxCount / 3);
+        int total = size * size;
 
         int easyCount = 0;
-        int easyMax = size - 2;               // easy = 2개 바로 붙어있는거(공간 점유용 칸)
+        int easyMax = size - 2;
 
-        for(int i = 0; i < maxCount; i++)
+        var solutions = new List<List<Vector2Int>>();     // 반복문 밖에서 한 번만
+
+        for(int attempt = 0; attempt < maxCount * 3 && solutions.Count < maxCount; attempt++)
         {
-            Vector2Int startPos = new Vector2Int(rng.Next(0, size), rng.Next(0, size)); // 시작 점은 0부터 크기까지의 좌표를 랜덤으로 설정
-            if(!occupied[startPos.x, startPos.y]) // 그 지점이 점유되어 있지 않을 때만 실행, 이로 실패 시 반복 기회 차감
+            Vector2Int startPos = new Vector2Int(rng.Next(0, size), rng.Next(0, size));
+            if(occupied[startPos.x, startPos.y]) continue;
+
+            int minLen = easyCount < easyMax ? 2 : 3;
+
+            bool isLong = solutions.Count < longCount;    // 건너뛴 시도가 긴 선 자리를 먹지 않게
+            int length = isLong
+                ? rng.Next(total / 4, total / 2 + 1)
+                : rng.Next(minLen, minLen + 2);
+
+            var path = new List<Vector2Int> { startPos };
+            occupied[startPos.x, startPos.y] = true;
+
+            for(int j = 1; j < length; j++)
             {
-                int minLen = easyCount < easyMax ? 2 : 3; //  // 길이가 2일 땐 바로 붙어있는거, 따라서 easy가 최대치 넘어가면 최소를 높힘
-                int maxLen = Mathf.Max(minLen, Mathf.RoundToInt(avg * 1.5f)); // 최대 크기는 총 칸의 60%를 총 색의 개수를 나눈 평균으로 가져옴
+                Vector2Int cur = path[path.Count - 1];
 
-                int length = rng.Next(minLen, maxLen + 1); // 랜덤들은 맥스를 제외함(int 기준)
-
-                // 걷는 동안 지나간 칸을 occupied에 바로 표시(자기 경로와 겹치는 것도 이 표시로 막힘)
-                var path = new List<Vector2Int> { startPos }; // 지나온 길 리스트
-                occupied[startPos.x, startPos.y] = true; // 시작점 점유
-
-                for(int j = 1; j < length; j++)
+                var candidates = new List<Vector2Int>(4);
+                foreach(var d in dirs)
                 {
-                    Vector2Int cur = path[path.Count - 1]; // 지나온 길 가장 위에 있는 거(바로 직전에 놓은 지점)
+                    Vector2Int n = cur + d;
+                    if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
+                    if(occupied[n.x, n.y]) continue;
+                    candidates.Add(n);
+                }
+                if(candidates.Count == 0) break;           // 막다른 길: 여기서 끝
 
-                    var candidates = new List<Vector2Int>(4); // 후보는 상하좌우 4개
-                    foreach(var d in dirs)
+                Vector2Int next;
+                if(rng.NextDouble() < 0.7)                 // 벽 따라가기
+                {
+                    int best = int.MaxValue;
+                    next = candidates[0];
+                    foreach(var candidate in candidates)
                     {
-                        Vector2Int n = cur + d; // 현재 + 방향 -> 다음 칸
-                        if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue; // 예외 :: 공간 넘어감
-                        if(occupied[n.x, n.y]) continue; // 예외 :: 점유됨
-                        candidates.Add(n); // 점유되어있지 않고, 공간이 넘어가지 않음
+                        int free = FreeNeighbors(candidate);
+                        if(free < best || (free == best && rng.Next(2) == 0))
+                        {
+                            best = free;
+                            next = candidate;
+                        }
                     }
-                    if(candidates.Count == 0) break;   // 예외 :: 막다른 길
-
-                    Vector2Int next = candidates[rng.Next(candidates.Count)]; // 가능한 무작위 칸
-                    path.Add(next); // 지나온 길에 추가
-                    occupied[next.x, next.y] = true; // 점유시킴
                 }
-
-                Vector2Int endPos = path[path.Count - 1]; // 마지막 위치
-                if(startPos == endPos) // 같은 점에 시작, 끝이 동시에 있을 때
+                else
                 {
-                    occupied[endPos.x, endPos.y] = false; // 점유 취소
-                    continue;
+                    next = candidates[rng.Next(candidates.Count)];
                 }
-
-                if(IsAdjacent(startPos, endPos))
-                {
-                    easyCount++;
-                }
-
-                starts.Add(startPos);
-                ends.Add(endPos);
+                path.Add(next);
+                occupied[next.x, next.y] = true;
             }
+
+            Vector2Int endPos = path[path.Count - 1];
+            if(startPos == endPos)
+            {
+                occupied[endPos.x, endPos.y] = false;
+                continue;
+            }
+
+            if(IsAdjacent(startPos, endPos)) easyCount++;
+            solutions.Add(path);                           // 확정된 경로 보관
+        }
+
+        // 남은 빈 칸을 선 끝으로 흡수 (반복문이 끝난 뒤 한 번)
+        bool grew = true;
+        while(grew)
+        {
+            grew = false;
+            foreach(var solution in solutions)
+            {
+                var tail = solution[solution.Count - 1];
+                foreach(var dir in dirs)
+                {
+                    var n = tail + dir;
+                    if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
+                    if(occupied[n.x, n.y]) continue;
+                    solution.Add(n);
+                    occupied[n.x, n.y] = true;
+                    tail = n;
+                    grew = true;
+                }
+            }
+        }
+
+        // 연장된 경로에서 점 좌표를 다시 뽑는다
+        starts.Clear();
+        ends.Clear();
+        foreach(var solution in solutions)
+        {
+            starts.Add(solution[0]);
+            ends.Add(solution[solution.Count - 1]);
         }
 
         for(int i = 0; i < starts.Count; i++)
@@ -482,6 +526,18 @@ public class FlowFreeMiniGame : MiniGameManager
 
             paths.Add(new FlowPath{ color = selectedCol });
         }
+    }
+
+    private int FreeNeighbors(Vector2Int cell) // 4방향 비어있는 칸 계산    
+    {
+        int n = 0;
+        foreach(var d in dirs)
+        {
+            var pos = cell + d;
+            if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) continue;
+            if(!occupied[pos.x, pos.y]) n++;
+        }
+        return n;
     }
 
     private Color RandomColor()
