@@ -9,7 +9,7 @@ public class CameraRotate : MonoBehaviour
     private float xRot; // x 회전도(위아래)
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked; // 커서 잠금
+        // Cursor.lockState = CursorLockMode.Locked; // 커서 잠금
     }
 
     private void Update()
