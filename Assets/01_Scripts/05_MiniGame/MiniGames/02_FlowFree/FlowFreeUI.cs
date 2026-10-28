@@ -43,6 +43,7 @@ public class FlowFreeUI : MonoBehaviour
 
     public void SetColor(Color color, int num)
     {
+        Debug.Log(color.a);
         image.color = color;
         numText.gameObject.SetActive(true);
         numText.text = num.ToString();
@@ -60,12 +61,14 @@ public class FlowFreeUI : MonoBehaviour
 
     public void SetDot(DotState state)
     {
+        if(isDot && dotState != DotState.NON && dotState == state) return;
         dotState = state;
         image.sprite = dotSprite[(int)state];
     }
 
     public void SetLine(LineState state)
     {
+        if(!isDot && lineState != LineState.NON && lineState == state) return;
         lineState = state;
         image.sprite = lineSprite[(int)state];
     }

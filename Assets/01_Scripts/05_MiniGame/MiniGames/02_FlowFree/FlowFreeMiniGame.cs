@@ -19,6 +19,8 @@ public class FlowFreeMiniGame : MiniGameManager
         }
     }
     [SerializeField] private Transform gridBoard;
+    [SerializeField] private RectTransform cellBoard;
+    [SerializeField] private RectTransform uiBoard;
     [SerializeField] private GameObject gridCell;
     [SerializeField] private FlowFreeUI uiPrefab;
     [SerializeField] private FlowFreeInput input;
@@ -57,7 +59,7 @@ public class FlowFreeMiniGame : MiniGameManager
         canvas.gameObject.SetActive(true);
         if(!IsOwner) return;
         gridCellPool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(gridCell, Vector3.zero, Quaternion.identity, gridBoard),
+            createFunc: () => Instantiate(gridCell, Vector3.zero, Quaternion.identity, cellBoard),
             actionOnGet: (obj) => obj.SetActive(true),
             actionOnRelease: (obj) => obj.SetActive(false),
             actionOnDestroy: (obj) => Destroy(obj),
@@ -66,7 +68,7 @@ public class FlowFreeMiniGame : MiniGameManager
         );
 
         uiPool = new ObjectPool<FlowFreeUI>(
-            createFunc: () => Instantiate(uiPrefab, Vector3.zero, Quaternion.identity, gridBoard),
+            createFunc: () => Instantiate(uiPrefab, Vector3.zero, Quaternion.identity, uiBoard),
             actionOnGet: (obj) => obj.gameObject.SetActive(true),
             actionOnRelease: (obj) => obj.gameObject.SetActive(false),
             actionOnDestroy: (obj) => Destroy(obj),
@@ -85,13 +87,13 @@ public class FlowFreeMiniGame : MiniGameManager
 
     public override void OnNetworkDespawn()
     {
-        base.OnNetworkDespawn();
-
         input.Down -= OnDown;
         input.Drag -= OnDrag;
         input.Up -= OnUp;
 
         ClearBoard();
+
+        base.OnNetworkDespawn();
     }
 
     private int DirToBit(Vector2Int dir)
@@ -232,6 +234,7 @@ public class FlowFreeMiniGame : MiniGameManager
             if(!path.complete) return;
         
         Debug.Log("Complete puzzle!");
+        Generate(size + 1);
     }
 
     private void CutPath(int selected, int keep)
@@ -284,7 +287,6 @@ public class FlowFreeMiniGame : MiniGameManager
                 rt.anchoredPosition = CellPosition(cell.x, cell.y);
                 rt.sizeDelta = new Vector2(cellSize, cellSize);
             }
-            (line.transform as RectTransform).anchoredPosition = CellPosition(cell.x, cell.y);
             line.SetColor(path.color);
 
         }
