@@ -588,8 +588,9 @@ GameObject:
   - component: {fileID: 1624329160}
   - component: {fileID: 1624329162}
   - component: {fileID: 1624329161}
+  - component: {fileID: 1624329163}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -714,6 +715,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1624329159}
   m_CullTransparentMesh: 1
+--- !u!114 &1624329163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624329159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e1bd80a9f6f545e4817b8cf0a2d17a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 01_MiniGameAsmdef::FlowFreeScore
+  scoreTxt: {fileID: 1624329161}
 --- !u!1 &2028314344
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,6 +812,7 @@ MonoBehaviour:
   uiPrefab: {fileID: 8287139146852810481, guid: c3a1b493ceb98444aa84162a673dbff4, type: 3}
   input: {fileID: 2028314348}
   canvas: {fileID: 1307795667}
+  scoreText: {fileID: 1624329163}
   boardSize: 900
   longShare: 0.75
 --- !u!114 &2028314348
