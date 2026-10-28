@@ -33,6 +33,7 @@ public class PlayerMove : NetworkBehaviour
                 InputManager.Instance.MoveEvent += HandleMove;
             else
                 Debug.LogWarning("InputManager.Instance가 null입니다. 씬에 InputManager가 있는지 확인하세요.");
+            
         }
     }
 

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public partial class UIManager : MonoBehaviour
 {
     public static UIManager instance{ get; private set;}
+    public Transform root;
     public Image interactImg;
     public Image fillImg;
     public Image invImg;
