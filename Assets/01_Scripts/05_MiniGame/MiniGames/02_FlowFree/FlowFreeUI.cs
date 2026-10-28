@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public enum DotState
 {
@@ -35,6 +35,8 @@ public class FlowFreeUI : MonoBehaviour
     public bool isDot;
     public DotState dotState;
     public LineState lineState;
+    private Vector3 originScale = new Vector3(1f, 1f, 1f);
+    private Vector3 highLightScale => originScale * 1.3f;
 
     private void OnEnable()
     {
@@ -71,5 +73,17 @@ public class FlowFreeUI : MonoBehaviour
         if(!isDot && lineState != LineState.NON && lineState == state) return;
         lineState = state;
         image.sprite = lineSprite[(int)state];
+    }
+
+    public void HighLight()
+    {
+        transform.DOKill();
+        transform.DOScale(highLightScale, 0.25f)
+        .SetEase(Ease.InBack)
+        .OnComplete(() =>
+        {
+            transform.DOScale(originScale, 0.25f)
+            .SetEase(Ease.OutBack);
+        });
     }
 }

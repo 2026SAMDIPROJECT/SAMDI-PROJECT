@@ -25,10 +25,12 @@ public class FlowFreeMiniGame : MiniGameManager
     [SerializeField] private FlowFreeUI uiPrefab;
     [SerializeField] private FlowFreeInput input;
     [SerializeField] private Canvas canvas;
-    [SerializeField] private float boardSize = 600f;
+    [SerializeField] private FlowFreeScore scoreText;
+    [SerializeField] private float boardSize = 800f;
+    [SerializeField, Range(0.5f, 0.95f)] private float longShare = 0.75f;
     private float cellSize;
     private float numSize;
-    private int size;
+    private int size = 0;
     private IObjectPool<GameObject> gridCellPool;
     private IObjectPool<FlowFreeUI> uiPool;
     private int[,] grid;
@@ -36,7 +38,6 @@ public class FlowFreeMiniGame : MiniGameManager
     private bool[,] occupied;
     private FlowFreeUI[,] dotUI;
     private int score;
-    private float fillRatio = 0.6f;
     private List<Vector2Int> starts = new List<Vector2Int>();
     private List<Vector2Int> ends = new List<Vector2Int>();
     private List<FlowPath> paths = new List<FlowPath>();
@@ -81,6 +82,8 @@ public class FlowFreeMiniGame : MiniGameManager
         input.Up += OnUp;
 
         Cursor.lockState = CursorLockMode.None;
+
+        scoreText.SetScore(score);
 
         base.OnNetworkSpawn();
     }
@@ -170,6 +173,11 @@ public class FlowFreeMiniGame : MiniGameManager
             paths[cellNum - 1].start = cellPos;
             paths[cellNum - 1].activeLines.Add(null);
             lineGrid[cellPos.x, cellPos.y] = cellNum;
+            FlowFreeUI startDot = dotUI[starts[cellNum - 1].x, starts[cellNum - 1].y];
+            FlowFreeUI endDot = dotUI[ends[cellNum - 1].x, ends[cellNum - 1].y];
+
+            startDot.HighLight();
+            endDot.HighLight();
         }
         else
         {
@@ -233,8 +241,10 @@ public class FlowFreeMiniGame : MiniGameManager
         foreach(var path in paths)
             if(!path.complete) return;
         
-        Debug.Log("Complete puzzle!");
-        Generate(size + 1);
+        scoreText.SetScore(++score);
+        size++;
+        if(size > 8) size = 8;
+        Generate(size);
     }
 
     private void CutPath(int selected, int keep)
@@ -301,6 +311,7 @@ public class FlowFreeMiniGame : MiniGameManager
         if(diffNum == selectedNum && path.start != cell)
         {
             path.complete = true;
+
             selectedNum = 0;
         }
 
@@ -317,7 +328,7 @@ public class FlowFreeMiniGame : MiniGameManager
             return;
         }
 
-        Generate(5);
+        Generate(6);
     }
 
 
@@ -358,100 +369,9 @@ public class FlowFreeMiniGame : MiniGameManager
         lineGrid = new int[size, size];
         dotUI = new FlowFreeUI[size, size];
 
-        int maxCount = size * size * 2;                         // 5x5면 색 5개 정도
-        int longCount = Mathf.Max(1, maxCount / 3);
-        int total = size * size;
+        int maxCount = Mathf.RoundToInt(size * size * 0.25f);
+        var solutions = BuildSolutions(maxCount);
 
-        int easyCount = 0;
-        int easyMax = size - 2;
-
-        var solutions = new List<List<Vector2Int>>();     // 반복문 밖에서 한 번만
-
-        for(int attempt = 0; attempt < maxCount * 3 && solutions.Count < maxCount; attempt++)
-        {
-            Vector2Int startPos = new Vector2Int(rng.Next(0, size), rng.Next(0, size));
-            if(occupied[startPos.x, startPos.y]) continue;
-
-            int minLen = easyCount < easyMax ? 2 : 3;
-
-            bool isLong = solutions.Count < longCount;    // 건너뛴 시도가 긴 선 자리를 먹지 않게
-            int length = isLong
-                ? rng.Next(total / 4, total / 2 + 1)
-                : rng.Next(minLen, minLen + 2);
-
-            var path = new List<Vector2Int> { startPos };
-            occupied[startPos.x, startPos.y] = true;
-
-            for(int j = 1; j < length; j++)
-            {
-                Vector2Int cur = path[path.Count - 1];
-
-                var candidates = new List<Vector2Int>(4);
-                foreach(var d in dirs)
-                {
-                    Vector2Int n = cur + d;
-                    if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
-                    if(occupied[n.x, n.y]) continue;
-                    candidates.Add(n);
-                }
-                if(candidates.Count == 0) break;           // 막다른 길: 여기서 끝
-
-                Vector2Int next;
-                if(rng.NextDouble() < 0.7)                 // 벽 따라가기
-                {
-                    int best = int.MaxValue;
-                    next = candidates[0];
-                    foreach(var candidate in candidates)
-                    {
-                        int free = FreeNeighbors(candidate);
-                        if(free < best || (free == best && rng.Next(2) == 0))
-                        {
-                            best = free;
-                            next = candidate;
-                        }
-                    }
-                }
-                else
-                {
-                    next = candidates[rng.Next(candidates.Count)];
-                }
-                path.Add(next);
-                occupied[next.x, next.y] = true;
-            }
-
-            Vector2Int endPos = path[path.Count - 1];
-            if(startPos == endPos)
-            {
-                occupied[endPos.x, endPos.y] = false;
-                continue;
-            }
-
-            if(IsAdjacent(startPos, endPos)) easyCount++;
-            solutions.Add(path);                           // 확정된 경로 보관
-        }
-
-        // 남은 빈 칸을 선 끝으로 흡수 (반복문이 끝난 뒤 한 번)
-        bool grew = true;
-        while(grew)
-        {
-            grew = false;
-            foreach(var solution in solutions)
-            {
-                var tail = solution[solution.Count - 1];
-                foreach(var dir in dirs)
-                {
-                    var n = tail + dir;
-                    if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
-                    if(occupied[n.x, n.y]) continue;
-                    solution.Add(n);
-                    occupied[n.x, n.y] = true;
-                    tail = n;
-                    grew = true;
-                }
-            }
-        }
-
-        // 연장된 경로에서 점 좌표를 다시 뽑는다
         starts.Clear();
         ends.Clear();
         foreach(var solution in solutions)
@@ -604,6 +524,143 @@ public class FlowFreeMiniGame : MiniGameManager
         usedColor.Clear();
         starts.Clear();
         ends.Clear();
+    }
+
+    private List<Vector2Int> BuildSnake()
+    {
+        var cells = new List<Vector2Int>(size * size);
+        for(int y = 0; y < size; y++)
+        {
+            for(int k = 0; k < size; k++)
+            {
+                int x = (y % 2 == 0) ? k : size - 1 - k;
+                cells.Add(new Vector2Int(x, y));
+            }
+        }
+        return cells;
+    }
+
+    // 끝점을 이웃 칸 쪽으로 접어서 경로 모양을 섞는다 (모든 칸을 지나는 성질은 유지됨)
+    private void Backbite(List<Vector2Int> cells, int moves)
+    {
+        int last = cells.Count - 1;
+        for(int m = 0; m < moves; m++)
+        {
+            if(rng.Next(2) == 0) cells.Reverse();           // 양쪽 끝을 번갈아 쓰려고 방향을 뒤집음
+
+            var n = cells[last] + dirs[rng.Next(4)];
+            if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
+            if(n == cells[last - 1]) continue;              // 이미 이어진 칸
+
+            int j = cells.IndexOf(n);
+            cells.Reverse(j + 1, last - j);                 // n 뒤쪽을 뒤집으면 꼬리가 n과 붙는다
+        }
+    }
+
+    // 전체 경로를 색 개수만큼 토막 낸다 (모든 칸이 어느 한 색에 속함)
+    private List<List<Vector2Int>> Segment(List<Vector2Int> cells, int colorCount)
+    {
+        var lens = new int[colorCount];
+        for(int i = 0; i < colorCount; i++) lens[i] = 2;    // 기본은 바로 붙은 쌍
+
+        int longCount = colorCount >= 6 ? 2 : 1;           // 앞의 longCount개가 긴 선
+        int rem = cells.Count - colorCount * 2;
+        for(int r = 0; r < rem; r++)
+        {
+            bool toLong = rng.NextDouble() < longShare;
+            int idx = toLong ? rng.Next(longCount) : rng.Next(longCount, colorCount);
+            lens[idx]++;
+        }
+
+        for(int i = colorCount - 1; i > 0; i--)             // 긴 선이 항상 앞쪽에 몰리지 않게 섞기
+        {
+            int j = rng.Next(i + 1);
+            (lens[i], lens[j]) = (lens[j], lens[i]);
+        }
+
+        var result = new List<List<Vector2Int>>(colorCount);
+        int offset = 0;
+        for(int i = 0; i < colorCount; i++)
+        {
+            result.Add(cells.GetRange(offset, lens[i]));
+            offset += lens[i];
+        }
+        return result;
+    }
+
+    // 다른 색 점은 지나갈 수 없다고 보고 s에서 e까지의 최단 칸 수 (선은 아직 없으니 점만 장애물)
+    private int ShortestAvoidingDots(Vector2Int s, Vector2Int e, int color, int[,] dotColor)
+    {
+        var dist = new int[size, size];
+        for(int x = 0; x < size; x++)
+            for(int y = 0; y < size; y++)
+                dist[x, y] = -1;
+
+        var q = new Queue<Vector2Int>();
+        dist[s.x, s.y] = 0;
+        q.Enqueue(s);
+
+        while(q.Count > 0)
+        {
+            var cur = q.Dequeue();
+            if(cur == e) return dist[cur.x, cur.y];
+
+            foreach(var d in dirs)
+            {
+                var n = cur + d;
+                if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
+                if(dist[n.x, n.y] >= 0) continue;
+
+                int dc = dotColor[n.x, n.y];
+                if(dc != 0 && dc != color) continue;
+
+                dist[n.x, n.y] = dist[cur.x, cur.y] + 1;
+                q.Enqueue(n);
+            }
+        }
+        return -1;
+    }
+
+    // 끝에서 끝까지 먼 쌍이 있는지, 점 때문에 돌아가야 하는 쌍이 충분한지 검사
+    private bool IsGoodPuzzle(List<List<Vector2Int>> segs, int needFar, int needDetour)
+    {
+        var dotColor = new int[size, size];
+        for(int i = 0; i < segs.Count; i++)
+        {
+            var s = segs[i][0];
+            var e = segs[i][segs[i].Count - 1];
+            dotColor[s.x, s.y] = i + 1;
+            dotColor[e.x, e.y] = i + 1;
+        }
+
+        int maxDist = 0;
+        int totalDetour = 0;
+        for(int i = 0; i < segs.Count; i++)
+        {
+            var s = segs[i][0];
+            var e = segs[i][segs[i].Count - 1];
+            int manhattan = Mathf.Abs(s.x - e.x) + Mathf.Abs(s.y - e.y);
+            maxDist = Mathf.Max(maxDist, manhattan);
+
+            int real = ShortestAvoidingDots(s, e, i + 1, dotColor);
+            if(real > manhattan) totalDetour += real - manhattan;
+        }
+        return maxDist >= needFar && totalDetour >= needDetour;
+    }
+
+    private List<List<Vector2Int>> BuildSolutions(int colorCount)
+    {
+        var cells = BuildSnake();
+        Backbite(cells, size * size * 20);                  // 처음에 크게 섞기
+
+        List<List<Vector2Int>> segs = null;
+        for(int attempt = 0; attempt < 200; attempt++)
+        {
+            Backbite(cells, size * size * 2);               // 조금씩 다시 섞고
+            segs = Segment(cells, colorCount);              // 다시 토막 낸다
+            if(IsGoodPuzzle(segs, size, size)) break;       // 먼 쌍 >= size, 우회 합계 >= size
+        }
+        return segs;                                        // 조건을 끝까지 못 맞추면 마지막 후보를 쓴다
     }
 
     private bool IsAdjacent(Vector2Int start, Vector2Int end) => Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y) == 1;

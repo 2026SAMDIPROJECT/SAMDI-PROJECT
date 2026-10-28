@@ -1,5 +1,6 @@
 ﻿<Solution>
   <Project Path="01_MiniGameAsmdef.csproj" />
+  <Project Path="DOTween.Modules.csproj" />
   <Project Path="01_PlayerAsmdef.csproj" />
   <Project Path="01_ManageAsmdef.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
