@@ -7,65 +7,70 @@ using UnityEngine.UI;
 public class PlayerInteract : NetworkBehaviour
 {
     [SerializeField] private LayerMask interactionLayer;
-    [SerializeField] private Image interactionUI;
-    [SerializeField] private Image interactionFill;
+    private Image interactionUI;
+    private Image interactionFill;
     [SerializeField] private float interval;
     [SerializeField] private float distance;
     [SerializeField] Camera cam;
-    [SerializeField] private PlayerInput playerInput;
+    [SerializeField] private PlayerInventoryHolder inventoryholder;
     private float holdDuration;
     private bool ishold;
     private bool isInteract;
     private Timer holdTime = new Timer();
     private InteractiveObject interactTarget;
+    public InventoryUI inventoryUI {get; private set;} // 추가: 외부에서 읽을 프로퍼티 추가
 
     public override void OnNetworkSpawn()
     {
-        if(!IsOwner)
-        {
-            if(playerInput != null)
-                playerInput.enabled = false;
-        }
+        if(!IsOwner) return;
+
+        if(InputManager.Instance != null)
+            InputManager.Instance.InteractEvent += HandleInteract;
         else
-        { // 이미 다른 컴포넌트에서 맴을 비활성화 / 활성화함
-            if(playerInput != null)
-                playerInput.enabled = true;
+            Debug.LogWarning("InputManager.Instance가 null입니다. 씬에 InputManager가 있는지 확인하세요.");
+            
+        if(UIManager.instance != null)
+        {
+            interactionUI = UIManager.instance.interactImg;
+            interactionFill = UIManager.instance.fillImg;
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if(!IsOwner) return;
+        if(InputManager.Instance != null)
+            InputManager.Instance.InteractEvent -= HandleInteract;
     }
 
     private void Update()
     {
+        if(!IsOwner) return;
         if(ishold && isInteract)
         {
             holdTime.RunTimer(); // 타이머 실행
-            interactionFill.fillAmount = holdTime.progress; // 타이머 진행도 프로퍼티 사용해 백분율 구함
+            if(interactionFill != null) interactionFill.fillAmount = holdTime.progress; // 타이머 진행도 프로퍼티 사용해 백분율 구함
         }
         Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-        RaycastHit hit;
 
-        if(Physics.Raycast(ray, out hit, distance, interactionLayer))
+        if(Physics.Raycast(ray, out RaycastHit hit, distance, interactionLayer) && hit.collider.TryGetComponent(out InteractiveObject obj)) // 콜라이더에 함수를 넣을 순 없으니까 GetComponent
         {
-            if(hit.collider.TryGetComponent(out InteractiveObject obj)) // 콜라이더에 함수를 넣을 순 없으니까 GetComponent
-            {
-                interactionUI.gameObject.SetActive(true);
-                isInteract = true;
-                interactTarget = obj;
-            }
-            else
-            {
-                Debug.Log("the obj not has interactiveobj");
-            }
+            interactionUI.gameObject.SetActive(true);
+            isInteract = true;
+            interactTarget = obj;
         }
         else
         {
             interactionUI.gameObject.SetActive(false);
             holdTime.EndTimer();
             isInteract = false;
+            interactTarget = null;
         }
     }
 
-    public void OnInteract(InputAction.CallbackContext callback)
+    private void HandleInteract(InputAction.CallbackContext callback)
     {
+        if(interactTarget == null) return;
         if(callback.started)
         {
             if(callback.interaction is HoldInteraction hold)
@@ -78,14 +83,16 @@ public class PlayerInteract : NetworkBehaviour
 
         if(callback.performed)
         {
-            interactTarget.Interact();
+            if (!IsOwner) return;
+            interactTarget.Interact(inventoryholder);
         }
 
         if(callback.canceled)
         {
             holdTime.EndTimer();
-            interactionFill.fillAmount = 0f;
+            if(interactionFill != null) interactionFill.fillAmount = 0f;
             ishold = false;
+            return;
         }
     }
 }
