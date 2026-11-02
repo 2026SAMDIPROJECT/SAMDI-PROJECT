@@ -1,5 +1,4 @@
 using System;
-using System.Xml;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -101,6 +100,7 @@ public class FishingMinigameController : MonoBehaviour
         logic.OnFinished -= HandleFinished;
         logic = null;
         canvas.SetActive(false);
+        CancleQte();
         OnResult?.Invoke(success);
     }
 }

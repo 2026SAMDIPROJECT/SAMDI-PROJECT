@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RareFish
   m_EditorClassIdentifier: Assembly-CSharp::FishData
   fishSmoothTime: 0.5
-  fishMaxSpeed: 2
+  fishMaxSpeed: 1.6
   quality: 1
   retargetInterval: {x: 0.8, y: 1.2}
   fishIconColor: {r: 0.33490568, g: 0.74552923, b: 1, a: 1}

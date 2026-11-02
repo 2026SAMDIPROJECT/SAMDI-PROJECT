@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d90c62d907674ed886fdeda726aaeee, type: 3}
   m_Name: TestRareFish
   m_EditorClassIdentifier: Assembly-CSharp::DifficultFishingData
-  barSize: 0.24
-  liftAccel: 2
-  gravity: 3
+  barSize: 0.3
+  liftAccel: 3.5
+  gravity: 4.2
   bottomBounce: 0
-  startFill: 0.2
+  startFill: 0.4
   gainPerSec: 0.15
   lossPerSec: 0.1
   qteInterval: {x: 6, y: 8}
   qteCount: {x: 6, y: 10}
+  qteSlowScale: 0.2
+  speedEaseTime: 0.3
   qteTimeLimit: 0.8
   qteFailPenalty: 0.2
   qteKeys: 250000000f0000002100000012000000i

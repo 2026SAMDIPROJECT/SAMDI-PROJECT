@@ -1,9 +1,10 @@
 using System.Collections;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FishingFlowController : MonoBehaviour
+public class FishingFlowController : NetworkBehaviour
 {
     private enum State{Idle, Waiting, Fishing};
 
@@ -24,20 +25,22 @@ public class FishingFlowController : MonoBehaviour
     }
     private IEnumerator CastRoutine()
     {
-        state = State.Waiting;
-        startButton.interactable = false;
-        statusText.text = "Fishing...";
+        if (!IsOwner) { 
+            state = State.Waiting;
+            startButton.interactable = false;
+            statusText.text = "Fishing...";
 
-        yield return new WaitForSeconds(Random.Range(biteDelayRange.x, biteDelayRange.y));
+            yield return new WaitForSeconds(Random.Range(biteDelayRange.x, biteDelayRange.y));
 
-        selectedFish = fishTable.GetRandomEntry();
+            selectedFish = fishTable.GetRandomEntry();
 
-        state = State.Fishing;
-        statusText.text = $"Cast! quality: {selectedFish.fishData.quality}";
-        minigame.startMinigame(
-            selectedFish.difficulty,
-            selectedFish.fishData
-        );  
+            state = State.Fishing;
+            statusText.text = $"Cast! quality: {selectedFish.fishData.quality}";
+            minigame.startMinigame(
+                selectedFish.difficulty,
+                selectedFish.fishData
+            );  
+        }
     }
     private void HandleResult(bool success)
     {
