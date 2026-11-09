@@ -18,7 +18,6 @@ public class PlayerMove : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
         if(!IsOwner)
         {
             if(cam != null)
@@ -37,16 +36,9 @@ public class PlayerMove : NetworkBehaviour
             
         }
     }
-    
-    public void OnSceneEvent(SceneEvent sceneEvent)
-    {
-        if(sceneEvent.SceneEventType == SceneEventType.Load)
-            gameObject.SetActive(false);
-    }
 
     public override void OnNetworkDespawn()
     {
-        NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
         if(!IsOwner) return;
         if(InputManager.Instance != null)
             InputManager.Instance.MoveEvent -= HandleMove;

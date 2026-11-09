@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
@@ -13,6 +12,7 @@ public partial class PlayerRegistry : MonoBehaviour
         if (Instance == null) Instance = this;
         else if (Instance != null){ Destroy(gameObject); return;}
     }
+
     // 플레이어 등록
     public void Register(Transform playerTransform)
     {
@@ -44,5 +44,25 @@ public partial class PlayerRegistry : MonoBehaviour
             }
         }
         return nearest;
+    }
+
+    public void ActivePlayers()
+    {
+        foreach(var p in activePlayers)
+        {
+            if(p == null) continue;
+
+            p.gameObject.SetActive(true);
+        }
+    }
+
+    public void DisActivePlayers()
+    {
+        foreach(var p in activePlayers)
+        {
+            if(p == null) continue;
+            
+            p.gameObject.SetActive(false);
+        }
     }
 }

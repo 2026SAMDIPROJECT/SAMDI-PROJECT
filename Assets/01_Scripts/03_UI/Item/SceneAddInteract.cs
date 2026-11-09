@@ -47,12 +47,13 @@ public class SceneAddInteract : InteractiveObject
 
     private void OnSceneEventReceived(SceneEvent sceneEvent)
     {
-        if(sceneEvent.SceneEventType == SceneEventType.Load)
+        if(sceneEvent.SceneEventType == SceneEventType.LoadComplete)
         {
-            if (InputManager.Instance != null)
+            if (InputManager.Instance != null && PlayerRegistry.Instance != null)
             {
                 InputManager.Instance.enabled = false;
                 InputManager.Instance.root.SetActive(false);
+                PlayerRegistry.Instance.DisActivePlayers();
             }
         }
     }
