@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public abstract class MiniGameManager : NetworkBehaviour
 {
     [SerializeField] protected float timeLimit;
 
+    protected string gameName;
     private bool isRunning;
     private MiniGameResult[] collectedResults;
     private int collectedIndex;
@@ -73,4 +75,16 @@ public abstract class MiniGameManager : NetworkBehaviour
 
     // 자식이 결과 받았을 때 할 일을 여기서 오버라이드
     protected virtual void OnGameFinished(MiniGameResult[] results) { }
+
+    [Rpc(SendTo.Server)]
+    protected void UnloadSceneRpc()
+    {
+        Scene scene = SceneManager.GetSceneByName(gameName);
+
+        InputManager.Instance.root.SetActive(true);
+        InputManager.Instance.enabled = true;
+        PlayerRegistry.Instance.ActivePlayers();
+
+        NetworkManager.Singleton.SceneManager.UnloadScene(scene);
+    }
 }

@@ -45,7 +45,6 @@ public class FlowFreeUI : MonoBehaviour
 
     public void SetColor(Color color, int num)
     {
-        Debug.Log(color.a);
         image.color = color;
         numText.gameObject.SetActive(true);
         numText.text = num.ToString();
