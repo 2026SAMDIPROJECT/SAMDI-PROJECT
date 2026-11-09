@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneAddInteract : InteractiveObject
 {
+    public string nextSceneName;
     public override void OnNetworkSpawn()
     {
         if (NetworkManager.Singleton != null && NetworkManager.Singleton.SceneManager != null)
@@ -30,7 +31,7 @@ public class SceneAddInteract : InteractiveObject
         }
         if (NetworkManager.Singleton.NetworkConfig.EnableSceneManagement)
         {
-            SceneEventProgressStatus status = NetworkManager.Singleton.SceneManager.LoadScene("TestMiniGame", LoadSceneMode.Additive);
+            SceneEventProgressStatus status = NetworkManager.Singleton.SceneManager.LoadScene(nextSceneName, LoadSceneMode.Additive);
 
             if (status == SceneEventProgressStatus.Started)
             {
