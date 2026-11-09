@@ -9,7 +9,7 @@ public partial class InputManager : MonoBehaviour
     public static InputManager Instance { get; private set; }
 
     public GameObject root;
-
+    public Transform player;
     public event Action<Vector2> MoveEvent;
     public event Action<InputAction.CallbackContext> InteractEvent;
 
