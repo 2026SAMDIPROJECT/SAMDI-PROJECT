@@ -2,13 +2,14 @@ using System.Collections;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class FishingFlowController : NetworkBehaviour
 {
     private enum State{Idle, Waiting, Fishing};
 
-    [SerializeField] private Button startButton;
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private FishingMinigameController minigame;
@@ -18,29 +19,33 @@ public class FishingFlowController : NetworkBehaviour
     private readonly FishingScore score = new FishingScore();
     private State state = State.Idle;
     private FishDropEntry selectedFish;
-    private void OnStartPress()
+
+    private void Update()
     {
-        if (state != State.Idle) return;
+        Debug.Log($"클릭 감지 / IsOwner={IsOwner} / IsSpawned={IsSpawned} / state={state}");
+        if(state != State.Idle) return;
+        if(Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
+        if(!IsOwner) return;
+        if(EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
+        Debug.Log("CastRoutine 시작");
         StartCoroutine(CastRoutine());
     }
     private IEnumerator CastRoutine()
     {
-        if (!IsOwner) { 
-            state = State.Waiting;
-            startButton.interactable = false;
-            statusText.text = "Fishing...";
+        state = State.Waiting;
+        statusText.text = "Fishing...";
 
-            yield return new WaitForSeconds(Random.Range(biteDelayRange.x, biteDelayRange.y));
+        yield return new WaitForSeconds(Random.Range(biteDelayRange.x, biteDelayRange.y));
 
-            selectedFish = fishTable.GetRandomEntry();
+        selectedFish = fishTable.GetRandomEntry();
 
-            state = State.Fishing;
-            statusText.text = $"Cast! quality: {selectedFish.fishData.quality}";
-            minigame.startMinigame(
-                selectedFish.difficulty,
-                selectedFish.fishData
-            );  
-        }
+        state = State.Fishing;
+        statusText.text = $"Cast! quality: {selectedFish.fishData.quality}";
+        minigame.startMinigame(
+            selectedFish.difficulty,
+            selectedFish.fishData
+        );  
     }
     private void HandleResult(bool success)
     {
@@ -52,18 +57,22 @@ public class FishingFlowController : NetworkBehaviour
     private void EnterIdle()
     {
         state = State.Idle;
-        startButton.interactable = true;
+        statusText.text = "Click To Cast";
     }
 
     private void UpdateScoreText(int total) => scoreText.text = $"Score : {total}";
 
     private void OnEnable()
     {
-        startButton.onClick.AddListener(OnStartPress);
         minigame.OnResult += HandleResult;
         score.OnChanged += UpdateScoreText;
 
         UpdateScoreText(score.totalScore);  
         EnterIdle();
+    }
+    private void OnDisable()
+    {
+        minigame.OnResult -= HandleResult;
+        score.OnChanged -= UpdateScoreText;
     }
 }
