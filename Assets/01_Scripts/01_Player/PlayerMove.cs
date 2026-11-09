@@ -25,6 +25,7 @@ public class PlayerMove : NetworkBehaviour
         }
         else
         {
+            NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
             Camera main = Camera.main;
             if(main != null && main != cam)
                 main.gameObject.SetActive(false);
@@ -35,6 +36,12 @@ public class PlayerMove : NetworkBehaviour
                 Debug.LogWarning("InputManager.Instance가 null입니다. 씬에 InputManager가 있는지 확인하세요.");
             
         }
+    }
+
+    public void OnSceneEvent(SceneEvent sceneEvent)
+    {
+        if(sceneEvent.SceneEventType == SceneEventType.Load)
+            gameObject.SetActive(false);
     }
 
     public override void OnNetworkDespawn()
