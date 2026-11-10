@@ -1031,6 +1031,98 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Wheelchair",
+            "id": "8821ae56-3ef6-47d5-83c2-8673b02c2e26",
+            "actions": [
+                {
+                    "name": "WheelchairCharge",
+                    "type": "Button",
+                    "id": "decbbc5c-54df-4e27-aef3-600609e65de7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "WheelchairPush",
+                    "type": "Button",
+                    "id": "999cdf67-07e9-485f-9c9d-7d23192b8b74",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "WheelchairSpinL",
+                    "type": "Button",
+                    "id": "f13ab74d-6b76-4be0-8911-196b80c2cfa9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "WheelchairSpinR",
+                    "type": "Button",
+                    "id": "a329d92e-8485-4212-8e34-1064907224a5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "31cbbc64-cdab-43bc-b95b-b6ac9b8cab1a",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WheelchairCharge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c41eeebe-1373-49f9-a0d1-c4b766e75c04",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WheelchairPush",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "37f1e4de-7f26-4796-ad8c-2dab8376a423",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WheelchairSpinL",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "38e579ac-e6e1-4675-a689-156d0b81c39c",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WheelchairSpinR",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
