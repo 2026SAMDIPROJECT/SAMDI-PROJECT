@@ -523,39 +523,6 @@ public class FlowFreeMiniGame : MiniGameManager
         ends.Clear();
     }
 
-    // 다른 색 점은 지나갈 수 없다고 보고 s에서 e까지의 최단 칸 수 (선은 아직 없으니 점만 장애물)
-    private int ShortestAvoidingDots(Vector2Int s, Vector2Int e, int color, int[,] dotColor)
-    {
-        var dist = new int[size, size];
-        for(int x = 0; x < size; x++)
-            for(int y = 0; y < size; y++)
-                dist[x, y] = -1;
-
-        var q = new Queue<Vector2Int>();
-        dist[s.x, s.y] = 0;
-        q.Enqueue(s);
-
-        while(q.Count > 0)
-        {
-            var cur = q.Dequeue();
-            if(cur == e) return dist[cur.x, cur.y];
-
-            foreach(var d in dirs)
-            {
-                var n = cur + d;
-                if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
-                if(dist[n.x, n.y] >= 0) continue;
-
-                int dc = dotColor[n.x, n.y];
-                if(dc != 0 && dc != color) continue;
-
-                dist[n.x, n.y] = dist[cur.x, cur.y] + 1;
-                q.Enqueue(n);
-            }
-        }
-        return -1;
-    }
-
     private bool IsFree(bool[,] taken, Vector2Int p)
         => p.x >= 0 && p.y >= 0 && p.x < size && p.y < size && !taken[p.x, p.y];
 
