@@ -190,20 +190,28 @@ public class FlowFreeMiniGame : MiniGameManager
         lastCell = cellPos;
     }
 
-    private void UpdateDrag(Vector2Int cellPos)
+private void UpdateDrag(Vector2Int cellPos)
+{
+    while(selectedNum != 0 && lastCell != cellPos)
     {
-        while(selectedNum != 0 && lastCell != cellPos) // 반복문은 포인터 점프 때문
-        {
-            var dis = cellPos - lastCell;
-            var step = Mathf.Abs(dis.x) >= Mathf.Abs(dis.y)
-            ? new Vector2Int((int)Mathf.Sign(dis.x), 0)
-            : new Vector2Int(0, (int)Mathf.Sign(dis.y));
+        var dis = cellPos - lastCell;
 
-            var next = lastCell + step;
-            if(!TryEnter(next)) break; // 실패 시 멈춤
-            lastCell = next;
-        }
+        // 목표에 가까워지는 방향만 후보로 (거리가 0인 축은 후보에서 제외)
+        var stepX = dis.x != 0 ? new Vector2Int(dis.x > 0 ? 1 : -1, 0) : Vector2Int.zero;
+        var stepY = dis.y != 0 ? new Vector2Int(0, dis.y > 0 ? 1 : -1) : Vector2Int.zero;
+
+        bool xFirst = Mathf.Abs(dis.x) >= Mathf.Abs(dis.y);
+        var first = xFirst ? stepX : stepY;
+        var second = xFirst ? stepY : stepX;
+
+        if(first != Vector2Int.zero && TryEnter(lastCell + first))
+            lastCell += first;
+        else if(second != Vector2Int.zero && TryEnter(lastCell + second))
+            lastCell += second;
+        else
+            break;                                  // 두 방향 다 막힘: 멈춘다
     }
+}
 
     private void RefreshShape(FlowPath path, int i)
     {
@@ -233,10 +241,35 @@ public class FlowFreeMiniGame : MiniGameManager
         if(ui != null) ui.SetDot(DotState.NON);
     }
 
+    private void AutoComplete()
+    {
+        var path = paths[selectedNum - 1];
+        if(path.cells.Count < 2) return;
+
+        var head = path.cells[path.cells.Count - 1];
+        foreach(var dir in dirs)
+        {
+            var n = head + dir;
+            if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
+            if(grid[n.x, n.y] != selectedNum) continue;
+            if(path.cells.Contains(n)) continue;
+
+            if(TryEnter(n))
+            {
+                lastCell = n;
+                return;
+            }
+        }
+    }
+
     private void EndDrag()
     {
         if(!dragging) return;
         dragging = false;
+
+        if(selectedNum != 0)
+            AutoComplete();
+
         selectedNum = 0;
         foreach(var path in paths)
             if(!path.complete) return;
