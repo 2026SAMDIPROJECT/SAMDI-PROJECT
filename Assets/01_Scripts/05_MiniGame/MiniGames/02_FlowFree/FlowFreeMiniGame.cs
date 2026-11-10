@@ -505,8 +505,8 @@ private void UpdateDrag(Vector2Int cellPos)
         for(int att = 0; !isUnique && att < 50; att++)
         {
             randH = Random.Range(0f, 1f);
-            randS = Random.Range(0.5f, 1f);
-            randV = Random.Range(0.6f, 1f);
+            randS = Random.Range(0.3f, 1f);
+            randV = Random.Range(0.4f, 1f);
             isUnique = true;
 
             foreach(Vector3 item in usedColor)
