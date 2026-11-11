@@ -9,28 +9,15 @@ public class PlayerInventoryHolder : NetworkBehaviour
     [SerializeField] private int totalSlot = 30;
     [SerializeField] private int columns = 5;
     private InventoryUI inventoryUI; // 이 컴포넌트를 넣는 플레이어가 InventoryUI를 설정할수 없어서 FindAnyObjectByType<>()으로 찾음
-    private void OnEnable()
-    {
-        PlayerEvents.OnPlayerRegistered += HandlePlayerRegistered;
-    }
-    private void OnDisable()
-    {
-        PlayerEvents.OnPlayerRegistered -= HandlePlayerRegistered;
-    }
-    private void HandlePlayerRegistered(Transform player)
-    {
-        if (player == transform)
-        {
-            ServerInventory = InventoryGridBuilder.Build(totalSlot,columns);
-        }
-    }
     public override void OnNetworkSpawn()
     {
+        if (!IsOwner) return;
+        ServerInventory = InventoryGridBuilder.Build(totalSlot, columns);
         inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include); // 숨겨진 곳에서도 
-        if(IsOwner && inventoryUI != null)
-        {
-            inventoryUI.ConnectUIManager();
-            inventoryUI.BindInventory(ServerInventory);
-        }
+        if(inventoryUI == null) 
+            return;
+        inventoryUI.ConnectUIManager();
+        inventoryUI.BindInventory(ServerInventory);
+        
     }
 }
