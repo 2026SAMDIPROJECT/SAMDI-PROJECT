@@ -12,6 +12,7 @@ public abstract class MiniGameManager : NetworkBehaviour
     private MiniGameResult[] collectedResults;
     private int collectedIndex;
     private readonly HashSet<ulong> pendingClients = new HashSet<ulong>();
+    protected Timer gameTimer = new Timer();
 
     public override void OnNetworkSpawn()
     {
@@ -40,7 +41,14 @@ public abstract class MiniGameManager : NetworkBehaviour
 
     public virtual void OnStartGame()
     {
-        
+        if(timeLimit > 0)
+        {
+            gameTimer.StartTimer(timeLimit);
+        }
+        else
+        {
+            gameTimer = null;
+        }
     }
 
     // 레이싱처럼 각자 따로 끝날 때 씀
@@ -86,5 +94,32 @@ public abstract class MiniGameManager : NetworkBehaviour
         PlayerRegistry.Instance.ActivePlayers();
 
         NetworkManager.Singleton.SceneManager.UnloadScene(scene);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    protected virtual void OnEndTimeLimitRpc()
+    {
+        
+    }
+
+    protected virtual void OnTimerTrigger()
+    {
+        
+    }
+
+    private void Update()
+    {
+        if(gameTimer != null)
+        {
+            gameTimer.RunTimer();
+            if(!gameTimer.during)
+            {
+                OnEndTimeLimitRpc();
+            }
+            else
+            {
+                OnTimerTrigger();
+            }
+        }
     }
 }

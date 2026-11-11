@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Pool;
 using System.Collections.Generic;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class FlowFreeMiniGame : MiniGameManager
 {
@@ -28,6 +29,7 @@ public class FlowFreeMiniGame : MiniGameManager
     [SerializeField] private FlowFreeScore scoreText;
     [SerializeField, Range(0f, 1f)] private float adjacentBias = 0.6f;
     [SerializeField] private float boardSize = 800f;
+    [SerializeField] private GameObject scoreBoard;
     private float cellSize;
     private float numSize;
     private int size = 0;
@@ -35,7 +37,6 @@ public class FlowFreeMiniGame : MiniGameManager
     private IObjectPool<FlowFreeUI> uiPool;
     private int[,] grid;
     private int[,] lineGrid;
-    private bool[,] occupied;
     private FlowFreeUI[,] dotUI;
     private int score;
     private List<Vector2Int> starts = new List<Vector2Int>();
@@ -47,6 +48,7 @@ public class FlowFreeMiniGame : MiniGameManager
     private int selectedNum;
     private Vector2Int lastCell = Vector2Int.zero;
     private bool dragging;
+    private bool ended = false;
 
     private System.Random rng = new System.Random();
 
@@ -58,7 +60,7 @@ public class FlowFreeMiniGame : MiniGameManager
     public override void OnNetworkSpawn()
     {
         canvas.gameObject.SetActive(true);
-        if(!IsOwner) return;
+        if(!IsClient) return;
         gridCellPool = new ObjectPool<GameObject>(
             createFunc: () => Instantiate(gridCell, Vector3.zero, Quaternion.identity, cellBoard),
             actionOnGet: (obj) => obj.SetActive(true),
@@ -95,6 +97,10 @@ public class FlowFreeMiniGame : MiniGameManager
         input.Up -= OnUp;
 
         ClearBoard();
+        gridCellPool?.Clear();
+        uiPool?.Clear();
+        gridCellPool = null;
+        uiPool = null;
 
         base.OnNetworkDespawn();
     }
@@ -141,15 +147,21 @@ public class FlowFreeMiniGame : MiniGameManager
 
     private void OnDown(Vector2 pos)
     {
+        if(ended) return;
         if(TryGetCell(pos, out var cellPos)) BeginDrag(cellPos);
     }
 
     private void OnDrag(Vector2 pos)
     {
+        if(ended) return;
         if(TryGetCell(pos, out var cellPos)) UpdateDrag(cellPos);
     }
 
-    private void OnUp() => EndDrag();
+    private void OnUp()
+    {
+        if(ended) return;
+        EndDrag();
+    }
 
     private bool TryGetCell(Vector2 mousePos, out Vector2Int cellPos)
     {
@@ -192,16 +204,24 @@ public class FlowFreeMiniGame : MiniGameManager
 
     private void UpdateDrag(Vector2Int cellPos)
     {
-        while(selectedNum != 0 && lastCell != cellPos) // 반복문은 포인터 점프 때문
+        while(selectedNum != 0 && lastCell != cellPos)
         {
             var dis = cellPos - lastCell;
-            var step = Mathf.Abs(dis.x) >= Mathf.Abs(dis.y)
-            ? new Vector2Int((int)Mathf.Sign(dis.x), 0)
-            : new Vector2Int(0, (int)Mathf.Sign(dis.y));
 
-            var next = lastCell + step;
-            if(!TryEnter(next)) break; // 실패 시 멈춤
-            lastCell = next;
+            // 목표에 가까워지는 방향만 후보로 (거리가 0인 축은 제외)
+            var stepX = dis.x != 0 ? new Vector2Int(dis.x > 0 ? 1 : -1, 0) : Vector2Int.zero;
+            var stepY = dis.y != 0 ? new Vector2Int(0, dis.y > 0 ? 1 : -1) : Vector2Int.zero;
+
+            bool xFirst = Mathf.Abs(dis.x) >= Mathf.Abs(dis.y);
+            var first = xFirst ? stepX : stepY;
+            var second = xFirst ? stepY : stepX;
+
+            if(first != Vector2Int.zero && TryEnter(lastCell + first))
+                lastCell += first;
+            else if(second != Vector2Int.zero && TryEnter(lastCell + second))
+                lastCell += second;
+            else
+                break;                                  // 두 방향 다 막힘: 멈춘다
         }
     }
 
@@ -237,14 +257,39 @@ public class FlowFreeMiniGame : MiniGameManager
     {
         if(!dragging) return;
         dragging = false;
+
+        if(selectedNum != 0)
+            TryAutoComplete();
+
         selectedNum = 0;
         foreach(var path in paths)
             if(!path.complete) return;
-        
+
         scoreText.SetScore(++score);
         size++;
         if(size > 8) size = 8;
         Generate(size);
+    }
+
+    private void TryAutoComplete()
+    {
+        var path = paths[selectedNum - 1];
+        if(path.cells.Count < 2) return;                      // 점만 누르고 뗀 경우는 제외
+
+        var head = path.cells[path.cells.Count - 1];
+        foreach(var d in dirs)
+        {
+            var n = head + d;
+            if(n.x < 0 || n.y < 0 || n.x >= size || n.y >= size) continue;
+            if(grid[n.x, n.y] != selectedNum) continue;       // 같은 색 점이 아님
+            if(path.cells.Contains(n)) continue;              // 이미 경로에 있는 점(시작 점)
+
+            if(TryEnter(n))
+            {
+                lastCell = n;
+                return;                                       // 완성되면 selectedNum이 0이 되므로 바로 종료
+            }
+        }
     }
 
     private void CutPath(int selected, int keep)
@@ -320,6 +365,9 @@ public class FlowFreeMiniGame : MiniGameManager
 
     public override void OnStartGame()
     {
+        base.OnStartGame();
+        if(!IsClient) return;
+        scoreBoard.SetActive(false);
         gridBoard.gameObject.SetActive(true);
 
         if(gridCellPool == null)
@@ -339,7 +387,7 @@ public class FlowFreeMiniGame : MiniGameManager
             size = newSize;
 
             gridRect.anchorMin = gridRect.anchorMax = gridRect.pivot = new Vector2(0.5f, 0.5f);
-            gridRect.anchoredPosition = Vector2.zero;
+            gridRect.anchoredPosition = new Vector2(0f, -50f);
             gridRect.sizeDelta = new Vector2(boardSize, boardSize); 
 
             cellSize = boardSize / size;
@@ -365,7 +413,6 @@ public class FlowFreeMiniGame : MiniGameManager
         if(!SetupSize(size)) return;
 
         grid = new int[size, size];
-        occupied = new bool[size, size];
         lineGrid = new int[size, size];
         dotUI = new FlowFreeUI[size, size];
 
@@ -658,5 +705,39 @@ public class FlowFreeMiniGame : MiniGameManager
             }
         }
         return null;
+    }
+
+    protected override void OnEndTimeLimitRpc()
+    {
+        base.OnEndTimeLimitRpc();
+        ended = true;
+        ReportResultRpc(new MiniGameResult
+        {
+            ClientId = NetworkManager.LocalClientId,
+            Rank = 0,
+            Score = score
+        });
+    }
+
+    protected override void OnGameFinished(MiniGameResult[] results)
+    {
+        int[] scores = new int[results.Length];
+        for(int i = 0; i < results.Length; i++)
+        {
+            scores[i] = results[i].Score;
+        }
+
+        scoreBoard.SetActive(true);
+        System.Array.Sort(scores);
+        System.Array.Reverse(scores);
+
+        scoreText.ScoreBoard(scores);
+    }
+
+    protected override void OnTimerTrigger()
+    {
+        base.OnTimerTrigger();
+
+        scoreText.SetTime(gameTimer.remainTime);
     }
 }
