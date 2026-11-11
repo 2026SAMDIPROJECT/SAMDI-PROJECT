@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da0767443c02c4ed7bc32f7a8c47c15c, type: 3}
+  m_Name: TestFishTable
+  m_EditorClassIdentifier: Assembly-CSharp::FishTableData
+  entries:
+  - fishData: {fileID: 11400000, guid: 1b8f2102dd66444e784bcdb7985e5b9a, type: 2}
+    chance: 14
+    difficulty: {fileID: 11400000, guid: 36400a228d37d4abf8aad14f2c579586, type: 2}
+  - fishData: {fileID: 11400000, guid: 95226ed759c474b8fa62a2351980f3f9, type: 2}
+    chance: 5
+    difficulty: {fileID: 11400000, guid: cbcf40ac9f31c41a684a1266d43e68d9, type: 2}
+  - fishData: {fileID: 11400000, guid: 2d380e5af0c1245f4a26b0eb4659bffd, type: 2}
+    chance: 1
+    difficulty: {fileID: 11400000, guid: b671fa06f7a4d465eb6a2791f0afd800, type: 2}
