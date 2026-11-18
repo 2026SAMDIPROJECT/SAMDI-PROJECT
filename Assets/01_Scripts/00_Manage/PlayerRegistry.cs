@@ -8,6 +8,7 @@ public partial class PlayerRegistry : MonoBehaviour
     public static PlayerRegistry Instance {get; private set;}
     private readonly List<Transform> activePlayers = new List<Transform>();
     private readonly List<Transform> localActivePlayers = new List<Transform>();
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -28,11 +29,8 @@ public partial class PlayerRegistry : MonoBehaviour
     {
         activePlayers.Remove(playerTransform);
     }
-
-    public void RegisterLocal(Transform player) => localActivePlayers.Add(player);
-
-    public void UnregisterLocal(Transform player) => localActivePlayers.Remove(player);
-
+    public void RegisterLocal(Transform playerTransform) => localActivePlayers.Add(playerTransform);
+    public void UnRegisterLocal(Transform playerTrasnform) => localActivePlayers.Remove(playerTrasnform);
     // 가장 가까운 플레이어 반환(멀티플레이어)
     public Transform GetNearestPlayer(Vector3 fromPosition)
     {

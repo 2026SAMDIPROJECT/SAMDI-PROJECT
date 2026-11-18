@@ -12,7 +12,7 @@ public class PlayerNetWorkInit : NetworkBehaviour
     }
     public override void OnNetworkDespawn()
     {
-        PlayerRegistry.Instance?.UnregisterLocal(transform);
+        PlayerRegistry.Instance?.UnRegisterLocal(transform);
         if (!IsServer) return;
         PlayerRegistry.Instance?.Unregister(transform);
     }
