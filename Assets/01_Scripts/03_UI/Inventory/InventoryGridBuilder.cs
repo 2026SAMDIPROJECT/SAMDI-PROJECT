@@ -13,6 +13,7 @@ public class InventoryGridBuilder
         {
             grid.LockCell(i % columns, i / columns);
         }
+
         return grid;
     }
 }

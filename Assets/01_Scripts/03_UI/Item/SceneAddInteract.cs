@@ -50,7 +50,6 @@ public class SceneAddInteract : InteractiveObject
         if(sceneEvent.SceneName != nextSceneName ||
         sceneEvent.ClientId != NetworkManager.Singleton.LocalClientId ||
         sceneEvent.LoadSceneMode != LoadSceneMode.Additive) return;
-
         if(sceneEvent.SceneEventType == SceneEventType.LoadComplete)
             {
                 if (InputManager.Instance != null && PlayerRegistry.Instance != null)
